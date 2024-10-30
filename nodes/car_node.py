@@ -1,22 +1,10 @@
 #!/usr/bin/env python3
 
 
-
-
-
-
-#BIG TODO: DO NOT UPDATE THE GLOBAL THROTTLE VALUE WITH THE THROTTLE MULTIPLIER
-
-
-
-
-
-
-
 import asyncio
 import rospy
 from mixed_reality.msg import Control
-from std_msgs.msg import Float64, Bool
+from std_msgs.msg import Float64
 import websockets
 import json
 import time
@@ -79,7 +67,6 @@ async def send_commands(websocket):
         message = json.dumps(command)
         await websocket.send(message)
     elif reverse:
-        #throttle*=3
         command = {
             "throttle": throttle*throttle_multiplier*3,
             "angle": steering
