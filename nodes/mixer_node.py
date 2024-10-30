@@ -43,6 +43,7 @@ def mixer_node():
     rospy.Subscriber("camera", SensorImage, new_camera_image)
     rospy.Subscriber("sim/image", SensorImage, new_simulator_image)
     pub_mixed = rospy.Publisher("mixed_image", SensorImage, queue_size=10)
+    rate = rospy.Rate(50)
 
     while not rospy.is_shutdown():
         #TODO: checar si este sleep es necesario
@@ -73,9 +74,9 @@ def mixer_node():
             #cv2.waitKey(0)
             try:
                 image_message = bridge.cv2_to_imgmsg(blended, encoding="bgr8")
-                print("image converted")
+                # print("image converted")
                 pub_mixed.publish(image_message)
-                print("published")
+                # print("published")
             except CvBridgeError as e:
                 print(e)
 
@@ -123,6 +124,7 @@ def mixer_node():
                 # Send the compressed image data via UDP
                 sock.sendto(compressed_data, (ip, port))
             '''
+        rate.sleep()
 
 
     print("[IMAGE MIXING NODE]: QUIT")
