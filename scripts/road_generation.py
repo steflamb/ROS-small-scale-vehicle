@@ -173,7 +173,7 @@ Y_MAP_SHIFT=50
 ANGLE_SHIFT=0
 
 #choose road
-ROAD_TYPE = 'Guericke'
+ROAD_TYPE = 'Circle'
 
 
 road_generation = Road_shapes_utils(SCALE_1, SCALE_2, X_MAP_SHIFT, Y_MAP_SHIFT, SIZE_FACTOR, ANGLE_SHIFT)
@@ -185,7 +185,8 @@ if ROAD_TYPE=='Guericke':
         start_offset_real=None
         initial_pose_sim,initial_pose_real,sim_waypoint_list,road_definition=road_generation.create_non_closed_road(road_points,start_angle,start_offset_real)
 if ROAD_TYPE=='Guericke_straight' or ROAD_TYPE=='Guericke_straight_obs':
-        road_points=[[0,-1.8],[0,-1.6],[0,-1.3],[0,-0.9],[0,-0.6],[0,0],[0,0.8],[0,1.6],[0,2.2],[0,2.6]]
+        road_points=[[0,-1.8],[0,-1.6],[0,-1.3],[0,-0.9],[0,-0.6],[0,0],[0,0.8],[0,1.6],[0,2.2]]
+                    #  ,[0,4],[0,6],[0,8],[0,10]]
         start_angle=0
         start_offset_real=[0.22,-0.3]
         initial_pose_sim,initial_pose_real,sim_waypoint_list,road_definition=road_generation.create_non_closed_road(road_points,start_angle,start_offset_real)
@@ -224,10 +225,14 @@ left_margin, right_margin = road_generation.generate_road_margins(sim_waypoint_l
 
 #Generate obstacles
 obstacles = []
-#obstacles.append(["Wall",42,47,0,0,-30,0])
-#obstacles.append(["cone",51,60,0,0,-90,0])
+# #obstacles for guericke
+# obstacles.append(["Barrel",39.174046199856555,62.74676445135568,0,0,-30,0])
+# obstacles.append(["cone",42.07875468798453,46.95302574990553,0,0,-90,0])
+# #obstacles for guericke straight
+# obstacles.append(["Barrel",46,64.74676445135568,0,0,-30,0])
+# obstacles.append(["cone",50,50,0,0,-90,0])
 
-
+# initial_pose_sim[1] = initial_pose_sim[1] + 1.1
 
 #load map elements into json file
 map = {
