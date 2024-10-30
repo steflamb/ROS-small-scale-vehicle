@@ -24,26 +24,36 @@ class C:
     # Parameter
     K_SIZE=7.33
     # Parameter
-    MAX_SPEED = 3.5*7.33 / 3.6
-    MAX_ACCEL = 2.0
-    MAX_CURVATURE = 2.5
+    # MAX_SPEED = 10*7.33 / 3.6
+    MAX_SPEED = 10*7.33 / 3.6
+    # MAX_ACCEL = 2.0
+    MAX_ACCEL = 2*7.33 / 3.6
+    MAX_CURVATURE = 10
 
-    ROAD_WIDTH = 3.
-    ROAD_SAMPLE_STEP = 1.0  #precision of reference path
+    ROAD_WIDTH = 1.2    #distance from center of lane to edge of lane
+    # ROAD_SAMPLE_STEP = 3  #precision of reference path
+    ROAD_SAMPLE_STEP = 1.5
 
-    T_STEP = 0.5   #smaller means more points on path
-    MAX_T = 10.0 #max and min distance for path endpoints
-    MIN_T = 6.0
 
-    TARGET_SPEED = 2.0*7.33 / 3.6
+    T_STEP = 0.25  #smaller means more points on path
+    # T_STEP = 0.3
+    # MAX_T = 10 #max and min distance for path endpoints
+    MAX_T = 3
+    MIN_T = 2
+
+    TARGET_SPEED = 0.4*7.33
     SPEED_SAMPLE_STEP = 5.0 / 3.6
+    # SPEED_SAMPLE_STEP = TARGET_SPEED*0.2
 
     # cost weights for Cruising
-    K_JERK = 0.1
-    K_TIME = 0.1
-    K_V_DIFF = 1.0
-    K_OFFSET = 100
-    K_COLLISION = 200
+    # K_JERK = 0.2
+    K_JERK = 0
+    # K_TIME = 0.1
+    K_TIME = 0
+    # K_V_DIFF = 10
+    K_V_DIFF = 0
+    K_OFFSET = 1500
+    K_COLLISION = 10000
 
     # cost weights for Stopping
     # K_JERK = 0.1
@@ -53,10 +63,10 @@ class C:
     # K_COLLISION = 500
 
     # parameters for vehicle
-    
     RF = 0.22 * K_SIZE  # [m] distance from rear to vehicle front end of vehicle
     RB = 0.05 * K_SIZE  # [m] distance from rear to vehicle back end of vehicle
-    W = 0.16 * K_SIZE  # [m] width of vehicle
+    # W = 0.16 * K_SIZE  # [m] width of vehicle
+    W = 0.25*K_SIZE
     WD = 0.9 * W  # [m] distance between left-right wheels
     WB = 0.2 * K_SIZE  # [m] Wheel base
     TR = 0.05 * K_SIZE  # [m] Tyre radius
@@ -99,9 +109,10 @@ class Path:
 def sampling_paths_for_Cruising(l0, l0_v, l0_a, s0, s0_v, s0_a, ref_path):
     PATHS = dict()
 
-    for s1_v in np.arange(C.TARGET_SPEED * 0.6, C.TARGET_SPEED * 1.4, C.TARGET_SPEED * 0.05):
+    for s1_v in np.arange(C.TARGET_SPEED * 0.6, C.TARGET_SPEED * 1.4, C.SPEED_SAMPLE_STEP):
 
-        for t1 in np.arange(4.5, 5.5, 0.2):
+        # for t1 in np.arange(4.5, 5.5, 0.2):
+        for t1 in np.arange(C.MIN_T, C.MAX_T, C.T_STEP):
             path_pre = Path()
             path_lon = quartic_polynomial.QuarticPolynomial(s0, s0_v, s0_a, s1_v, 0.0, t1)
 
@@ -111,7 +122,7 @@ def sampling_paths_for_Cruising(l0, l0_v, l0_a, s0, s0_v, s0_a, ref_path):
             path_pre.s_a = [path_lon.calc_ddxt(t) for t in path_pre.t]
             path_pre.s_jerk = [path_lon.calc_dddxt(t) for t in path_pre.t]
 
-            for l1 in np.arange(-C.ROAD_WIDTH, C.ROAD_WIDTH, C.ROAD_SAMPLE_STEP):
+            for l1 in np.arange(-C.ROAD_WIDTH, 3*C.ROAD_WIDTH, C.ROAD_SAMPLE_STEP):
                 path = copy.deepcopy(path_pre)
                 path_lat = quintic_polynomial.QuinticPolynomial(l0, l0_v, l0_a, l1, 0.0, 0.0, t1)
 
@@ -126,10 +137,13 @@ def sampling_paths_for_Cruising(l0, l0_v, l0_a, s0, s0_v, s0_a, ref_path):
                 l_jerk_sum = sum(np.abs(path.l_jerk))
                 s_jerk_sum = sum(np.abs(path.s_jerk))
                 v_diff = abs(C.TARGET_SPEED - path.s_v[-1])
+                avg_offset = sum(np.abs(path.l))/len(path.l)
+                if len(path.x)<3:
+                    continue
                 path.cost = C.K_JERK * (l_jerk_sum + s_jerk_sum) + \
                             C.K_V_DIFF * v_diff + \
                             C.K_TIME * t1 * 2 + \
-                            C.K_OFFSET * abs(path.l[-1]) + \
+                            C.K_OFFSET * avg_offset + \
                             C.K_COLLISION * is_path_collision(path)
 
                 PATHS[path] = path.cost
@@ -177,7 +191,7 @@ def sampling_paths_for_Stopping(l0, l0_v, l0_a, s0, s0_v, s0_a, ref_path):
                             50.0 * sum(np.abs(path.s_v))
 
                 PATHS[path] = path.cost
-                print(path.cost)
+                # print(path.cost)
     return PATHS
 
 
@@ -222,66 +236,80 @@ def calc_yaw_curv(x, y):
 
 
 def is_path_collision(path):
-    # global obstacle_array
+    # if len(path.x)<2:
+    #     return 1.0
+
+    global obstacle_array
     # index = range(0, len(path.x), 5)
-    # x = [path.x[i] for i in index]
-    # y = [path.y[i] for i in index]
-
-    # yaw = [path.yaw[i] for i in index]
-
-    # for ix, iy, iyaw in zip(x, y, yaw):
-    #     d = 1.8
-    #     dl = (C.RF - C.RB) / 2.0
-    #     r = math.hypot((C.RF + C.RB) / 2.0, C.W / 2.0) + d
-
-    #     cx = ix + dl * math.cos(iyaw)
-    #     cy = iy + dl * math.sin(iyaw)
-
-    #     for i in range(len(obstacle_array)):
-    #         xo = obstacle_array[i].x - cx
-    #         yo = obstacle_array[i].y - cy
-    #         dx = xo * math.cos(iyaw) + yo * math.sin(iyaw)
-    #         dy = -xo * math.sin(iyaw) + yo * math.cos(iyaw)
-
-    #         if abs(dx) < r + obstacle_array[i].width / 2 and abs(dy) < C.W / 2 + d + obstacle_array[i].height / 2:
-    #             print("COLLISION")
-    #             return 1.0
-    # print("no collision")
-    # return 0.0
-    
-    index = range(0, len(path.x), 5)
+    index = range(0, len(path.x), 1)
     x = [path.x[i] for i in index]
     y = [path.y[i] for i in index]
+
     yaw = [path.yaw[i] for i in index]
 
     for ix, iy, iyaw in zip(x, y, yaw):
-        d = 1.8
+        # d = 1.8
+        d = 2.5
         dl = (C.RF - C.RB) / 2.0
         r = math.hypot((C.RF + C.RB) / 2.0, C.W / 2.0) + d
 
         cx = ix + dl * math.cos(iyaw)
         cy = iy + dl * math.sin(iyaw)
 
-        for i in range(len(C.obs)):
-            xo = C.obs[i][0] - cx
-            yo = C.obs[i][1] - cy
+        for i in range(len(obstacle_array)):
+            xo = obstacle_array[i].x - cx
+            yo = obstacle_array[i].y - cy
             dx = xo * math.cos(iyaw) + yo * math.sin(iyaw)
             dy = -xo * math.sin(iyaw) + yo * math.cos(iyaw)
 
-            if abs(dx) < r and abs(dy) < C.W / 2 + d:
+            if abs(dx) < r + obstacle_array[i].width / 2 and abs(dy) < C.W / 2 + d + obstacle_array[i].height / 2:
+                # print("COLLISION")
                 return 1.0
-
+    # print("no collision")
     return 0.0
 
-
+bad_speed = False
+bad_accel = False
+bad_curv = False
+bad_collision = False
+bad_angle = False
 def verify_path(path):
+    global bad_speed
+    global bad_accel
+    global bad_curv
+    global bad_collision
+    global bad_angle
+    if path is None:
+        return False
+
+    # print(any([v > C.MAX_SPEED for v in path.s_v]) or \
+    #         any([abs(a) > C.MAX_ACCEL for a in path.s_a]) or \
+    #         any([abs(curv) > C.MAX_CURVATURE for curv in path.curv]),\
+    #         max([abs(curv) for curv in path.curv]))
+    if any([v > C.MAX_SPEED for v in path.s_v]):
+        bad_speed = True
+    if any([abs(a) > C.MAX_ACCEL for a in path.s_a]):
+        bad_accel = True
+    if any([abs(curv) > C.MAX_CURVATURE for curv in path.curv]):
+        bad_curv = True
 
     if any([v > C.MAX_SPEED for v in path.s_v]) or \
             any([abs(a) > C.MAX_ACCEL for a in path.s_a]) or \
             any([abs(curv) > C.MAX_CURVATURE for curv in path.curv]):
+        # print(any([abs(curv) > C.MAX_CURVATURE for curv in path.curv]),max([abs(curv) for curv in path.curv]))
+        # print(max([abs(curv) for curv in path.curv]))
         return False
-    #TODO: collision check added by myself
-    if is_path_collision(path) == 1.0:
+    
+    # #TODO: collision check added by myself
+    # if is_path_collision(path) == 1.0:
+    #     bad_collision = True
+    #     return False
+    
+    
+    dy = (path.yaw[2] - path.yaw[1]) / path.ds[1]
+    steer = pi_2_pi(math.atan(-C.WB * dy))
+    if abs(steer > C.MAX_STEER):
+        bad_angle = True
         return False
 
     return True
@@ -289,6 +317,7 @@ def verify_path(path):
 
 def extract_optimal_path(paths):
     if len(paths) == 0:
+        print("no paths generated, len(paths)=0")
         return None
         
     while len(paths) > 1:
@@ -296,12 +325,12 @@ def extract_optimal_path(paths):
         paths.pop(path)
         # if verify_path(path) is False:
         if verify_path(path) is False:
-            print("REJECTED")
+            # print("REJECTED")
             continue
         else:
-            print("accepted")
+            # print("accepted")
             return path
-    return list(paths.items())[-1][0]
+    return None
 
 
 def lattice_planner_for_Cruising(l0, l0_v, l0_a, s0, s0_v, s0_a, ref_path):
@@ -411,6 +440,12 @@ def main_Crusing():
     global speed
     global pose
     global got_pose
+
+    global bad_speed
+    global bad_accel
+    global bad_curv
+    global bad_angle
+    global bad_collision
     ENV = env.ENVCrusing()
     if TRACKING:
         C.K_SIZE = 1
@@ -441,10 +476,11 @@ def main_Crusing():
     by2 = [point[1]/K_SIZE for point in right_lane]
 
     #Read obstacles from JSON file
-    C.obs = np.array([Obstacle(39.174046199856555, 62.74676445135568,(3.14/2), C.W, C.RF),Obstacle(42.07875468798453, 46.95302574990553, (3.14/2), C.W, C.RF)])
-    # for obstacle in map_data["obstacles"]:
-    #     obstacle_dict[obstacle[0]] = [obstacle[1],obstacle[2]]
-    # obstacle_array = np.array(list(map(lambda o: Obstacle(obstacle_dict[o][0], obstacle_dict[o][1], (3.14/2),C.W,C.RF), obstacle_dict.items())))
+    # C.obs = np.array([Obstacle(39.174046199856555, 62.74676445135568,(3.14/2), C.W, C.RF),Obstacle(42.07875468798453, 46.95302574990553, (3.14/2), C.W, C.RF)])
+    width = C.W*1.2
+    for obstacle in map_data["obstacles"]:
+        obstacle_dict[obstacle[0]] = [obstacle[1],obstacle[2]]
+    obstacle_array = np.array(list(map(lambda o: Obstacle(obstacle_dict[o][0], obstacle_dict[o][1], (3.14/2),width,C.RF), obstacle_dict.keys())))
 
     obs_x = [obs.x for obs in obstacle_array]
     obs_y = [obs.y for obs in obstacle_array]
@@ -482,6 +518,8 @@ def main_Crusing():
     while not got_pose:
         pass
     print(f"Received pose is {pose}\nStart of path is {[rx[0],ry[0],ryaw[0]]}")
+
+    counter = 0
 
     while not rospy.is_shutdown():
         #get acceleration of the car
@@ -526,26 +564,80 @@ def main_Crusing():
         s0 = s_condition[0]
         s0_v = s_condition[1]
         s0_a = s_condition[2]
+
+        if counter == 0:
+            print(d_condition, s_condition)
+            s0 = 0.001
+            s0_v = 0.001
+            s0_a =0.001
+            l0=0
+        counter +=1
         # print(f"d: {d_condition}\ns: {s_condition}")
 
         path = lattice_planner_for_Cruising(l0, l0_v, l0_a, s0, s0_v, s0_a, ref_path)
-        # print("got new path")
+        # # print("got new path")
+        # for curv in path.curv:
+        #     if curv>C.MAX_CURVATURE:
+        #         print("oh no")
+        #         path=None
+        try:
+            if np.hypot(path.x[1] - rx[-1], path.y[1] - ry[-1]) <= 0.3*7.33:
+                print("Goal")
+                pub_waypoints.publish(True, [])
+                plt.cla()
+                # for stopping simulation with the esc key.
+                plt.gcf().canvas.mpl_connect(
+                    'key_release_event',
+                    lambda event: [exit(0) if event.key == 'escape' else None])
+                plt.plot(rx, ry, linestyle=':', color='gray')
+                plt.plot(cx, cy, linestyle='--', color='gold')
+                plt.plot(bx1, by1, linewidth=1.5, color='k')
+                plt.plot(bx2, by2, linewidth=1.5, color='k')
+                plt.plot(path.x[1:], path.y[1:], linewidth='2', color='royalblue')
+                plt.plot(obs_x, obs_y, 'ok')
+                # for obs in C.obs:
+                #     draw.draw_car(obs.x, obs.y, obs.yaw, steer, C)
+                for obs in obstacle_array:
+                    draw.draw_car(obs.x, obs.y, obs.yaw, steer, C)
+                #draw.draw_car(path.x[1], path.y[1], path.yaw[1], steer, C)
+                draw.draw_car(pose[0], pose[1], math.radians(pose[2]), steer, C)
+                plt.title("[Crusing Mode]  v :" + str(s0_v * 3.6)[0:4] + " km/h")
+                plt.axis("equal")
+                plt.pause(0.0001)
+                plt.show(block=False)
+                break
+        except:
+            pass
 
         if path is None:
             print("No feasible path found!!")
-            pub_waypoints.publish(True, [])
-            break
+            causes = "Causes: "
+            if bad_speed:
+                causes = causes + "speed, "
+                bad_speed = False
+            if bad_accel:
+                causes = causes + "accel, "
+                bad_accel = False
+            if bad_curv:
+                causes = causes + "curv, "
+                bad_curv = False
+            if bad_angle:
+                causes = causes = "angle, "
+                bad_angle = False
+            if bad_collision:
+                causes = causes + "collision"
+                bad_collision = False
+            print(causes)
+            # pub_waypoints.publish(True, [])
+            continue
 
-        if np.hypot(path.x[1] - rx[-1], path.y[1] - ry[-1]) <= 0.3*7.33:
-            print("Goal")
-            pub_waypoints.publish(True, [])
-            break
+        
 
         waypoints = []
         for i in range(0,len(path.x)):
             waypoints.append(Waypoint(path.x[i], path.y[i]))
         pub_waypoints.publish(True, waypoints)
-        # print("new waypoints published")
+        print("new waypoints published")
 
         dy = (path.yaw[2] - path.yaw[1]) / path.ds[1]
         steer = pi_2_pi(math.atan(-C.WB * dy))
@@ -561,10 +653,10 @@ def main_Crusing():
         plt.plot(bx2, by2, linewidth=1.5, color='k')
         plt.plot(path.x[1:], path.y[1:], linewidth='2', color='royalblue')
         plt.plot(obs_x, obs_y, 'ok')
-        for obs in C.obs:
-            draw.draw_car(obs.x, obs.y, obs.yaw, steer, C)
-        # for obs in obstacle_array:
+        # for obs in C.obs:
         #     draw.draw_car(obs.x, obs.y, obs.yaw, steer, C)
+        for obs in obstacle_array:
+            draw.draw_car(obs.x, obs.y, obs.yaw, steer, C)
         #draw.draw_car(path.x[1], path.y[1], path.yaw[1], steer, C)
         draw.draw_car(pose[0], pose[1], math.radians(pose[2]), steer, C)
         plt.title("[Crusing Mode]  v :" + str(s0_v * 3.6)[0:4] + " km/h")
