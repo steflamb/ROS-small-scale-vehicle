@@ -17,7 +17,7 @@ from mixed_reality.msg import Waypoint, WaypointList, Obstacles, SimPose
 import tf
 
 from mixed_reality.lattice_planner import cubic_spline, quintic_polynomial, quartic_polynomial, env, draw, frenet
-from mixed_reality.for_conversions.for_conversions import For_convertion_utils
+from mixed_reality.utils.for_conversions import For_convertion_utils
 
 #TODO: revert parameters to the ones on the reference/original file
 class C:
