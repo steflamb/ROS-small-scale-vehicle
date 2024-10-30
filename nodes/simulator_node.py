@@ -168,7 +168,7 @@ class For_convertion_utils():
 
     def sim2real_xyzypr(self,pose,orientation):
         x=(pose[0]-self.x_map_shift)/self.size_factor
-        y=(pose[2]-self.x_map_shift)/self.size_factor
+        y=(pose[2]-self.y_map_shift)/self.size_factor
         angle=-(orientation[1]-self.angle_shift)
         return [x,y,angle]
     
@@ -194,12 +194,13 @@ Y_MAP_SHIFT=50
 ANGLE_SHIFT=0
 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
   
+map_name = "closed_road_shape.json"
 
 #TODO: move to a config file
 simulator_ip = "127.0.0.1"
 simulator_port = 9091
-MAPPING = False
-TRACKING = False
+MAPPING = True
+TRACKING = True
 position_tracked = False
 
 
@@ -290,7 +291,7 @@ def new_reset(msg):
     global position_tracked
     print("\nRESETTING SCENARIO")
     #read initial road configuration from json file
-    f = open("map.json", "r")
+    f = open(map_name, "r")
     map_data = json.loads(f.read())
     f.close()
     simulator_client.msg_handler.reset_scenario(0,map_data["road_definition"])
@@ -355,7 +356,7 @@ def simulator_node():
 
     #read initial road configuration from json file
     print("\nINITIALIZING SCENARIO")
-    f = open("map.json", "r")
+    f = open(map_name, "r")
     map_data = json.loads(f.read())
     f.close()
     simulator_client.msg_handler.reset_scenario(0,map_data["road_definition"])
@@ -445,7 +446,6 @@ def simulator_node():
         if pub_sim_image is None:
             pub_sim_image = rospy.Publisher("sim/image", SensorImage, queue_size=10)
         pub_sim_image.publish(msg_sim_image)
-
 
 
         image_for_model = simulator_client.msg_handler.img_arr
