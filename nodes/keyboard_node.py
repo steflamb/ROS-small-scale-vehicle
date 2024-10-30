@@ -5,7 +5,9 @@ from std_msgs.msg import Bool, Float64, String
 from mixed_reality.msg import WaypointList, Waypoint
 import json
 import os
+import time
 
+from mixed_reality.msg import Control
 
 
 
@@ -60,6 +62,11 @@ Y_MAP_SHIFT=50
 ANGLE_SHIFT=0
 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
 
+
+speed = 0
+def new_speed(msg):
+    global speed
+    speed = msg.data
 
 
 
@@ -124,14 +131,71 @@ def keyboard_node():
             else:
                 print("There was an error parsing the waypoint\nExample usage: 'w: 1.0, 0.8'")
         elif "demo" in message:
-            f = open("map.json", "r")
+            f = open("closed_road_shape.json", "r")
             map_data = json.loads(f.read())
             f.close()
-            wp = map_data["right_lane"]
+
+            reverse=True   #TODOSTE: remove this reversal
+            lane="left"
+
+            if reverse and lane=="right":
+                lane_map="left"
+            elif reverse and lane=="left":
+                lane_map="right"
+            wp = map_data[f"{lane_map}_lane"]
             wp_list = list(map(lambda pair:Waypoint(pair[0], pair[1]), wp))
-            #wp_list.reverse()   #TODO: remove this reversal
+            if reverse:
+                wp_list.reverse()
             pub_waypoint.publish(True,wp_list)
-            pub_current_lane.publish("right")
+            pub_current_lane.publish(lane)
+        elif "forward" in message:
+            print("starting forward difference experiment")
+            parts = message.split(" ")
+            throttle = float(parts[1])
+            duration = float(parts[2])
+            steering = 0
+            print(f"applying throttle {throttle} for {duration} seconds")
+            pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
+            pub_throttle_multiplier.publish(1)
+            sim_mult = rospy.Publisher("throttle_sim/multiplier", Float64, queue_size=10)
+            sim_mult.publish(1)
+            start = time.time()
+            while time.time()-start <duration:
+                pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
+            pub_throttle_steering.publish(Control(0,steering,False,False,False))
+        elif "arc" in message:
+            print("starting arc difference experiment")
+            parts = message.split(" ")
+            steering = float(parts[1])
+            throttle = float(parts[2])
+            duration = float(parts[3])
+            print(f"applying steering {steering} an throttle {throttle} fro {duration} seconds")
+            pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
+            pub_throttle_multiplier.publish(1)
+            sim_mult = rospy.Publisher("throttle_sim/multiplier", Float64, queue_size=10)
+            sim_mult.publish(1)
+            start = time.time()
+            while time.time()-start <duration:
+                pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
+            pub_throttle_steering.publish(Control(0,steering,True,False,True))
+        elif "braking" in message:
+            print("starting braking behaviour experiment")
+            parts = message.split(" ")
+            steering = 0
+            throttle = float(parts[1])
+            target = float(parts[2])
+            rospy.Subscriber("donkey/speed", new_speed)
+            print(f"applying throttle {throttle} until speed is {target}")
+            pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
+            pub_throttle_multiplier.publish(1)
+            sim_mult = rospy.Publisher("throttle_sim/multiplier", Float64, queue_size=10)
+            sim_mult.publish(1)
+            while abs(speed-target)>0.1:
+                pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
+            print("speed reaches, applying brakes")
+            while speed>0.1:
+                pub_throttle_steering.publish(Control(0,steering,True,False,True))
+            print("braking operation is over")
         else:
             print(f"Command '{message}' not recognized\n")
             print(help)
