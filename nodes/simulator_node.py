@@ -165,7 +165,7 @@ Y_MAP_SHIFT=50
 ANGLE_SHIFT=0
 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
   
-map_name = "closed_road_shape.json"
+map_name = rospy.get_param("map_name")
 
 #TODO: move to a config file
 simulator_ip = "127.0.0.1"

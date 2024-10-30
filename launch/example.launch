@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 
 <launch>
-    <node name="sim_node" pkg="mixed_reality" type="simulator_node.py">
+    <rosparam command="load" file="$(find mixed_reality)/launch/params.yaml" />
+    <node name="sim_node" pkg="mixed_reality" type="simulator_node.py" cwd="node"/>
 </launch>
