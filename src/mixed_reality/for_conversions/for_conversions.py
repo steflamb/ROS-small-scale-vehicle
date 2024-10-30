@@ -15,7 +15,7 @@ class For_convertion_utils():
 
     def sim2real_xyzypr(self,pose,orientation):
         x=(pose[0]-self.x_map_shift)/self.size_factor
-        y=(pose[2]-self.x_map_shift)/self.size_factor
+        y=(pose[2]-self.y_map_shift)/self.size_factor
         angle=-(orientation[1]-self.angle_shift)
         return [x,y,angle]
     
