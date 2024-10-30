@@ -1,1 +1,5 @@
-#TODO: make different launch files for the different scenarios (mapping, sim only, etc)
+<?xml version="1.0"?>
+
+<launch>
+    <node name="sim_node" pkg="mixed_reality" type="simulator_node.py">
+</launch>
