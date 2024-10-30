@@ -214,10 +214,12 @@ def tracking_node():
                 pose_msg.pose.orientation.w = quaternion[3]
 
                 pose_pub.publish(pose_msg)
+            elif name=="barrier" or name=="barrier_1":
+                x,y,a = for_conversions.real2sim_xyp([translation_x/1000,translation_y/1000,math.degrees(rotation_z_rad)])
+                obstacles.append(SimPose(name,x,y,translation_z/1000-0.1,a,-89.99,0))
             else:
                 x,y,_ = for_conversions.real2sim_xyp([translation_x/1000,translation_y/1000,0])
                 obstacles.append(SimPose(name,x,y,translation_z/1000,0,0,0))
-
             object_base_offset += 3+item_data_size
 
         obstacle_pub.publish(obstacles)
