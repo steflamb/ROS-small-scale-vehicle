@@ -9,11 +9,11 @@ import math
 import time
 
 
-THRESHOLD = 7
+THRESHOLD = 8
 
 simulator_pose = [0.0,0.0,0.0]
 current_waypoint_index = 0
-current_lane = "right"
+current_lane = "left"
 obstacles = {}
 """ Example obstacle dictionary:
 {
@@ -48,12 +48,19 @@ def obstacleAvoidance_node():
     global current_lane
 
     #Load lane data from JSON map file
-    f = open("map.json", "r")
+    f = open("closed_road_shape.json", "r")
     map_data = json.loads(f.read())
     f.close()
-    sim_waypoint_list_left =  map_data["left_lane"]
-    sim_waypoint_list_right = map_data["right_lane"]
-    sim_waypoint_list_center = map_data["sim_waypoint_list"]
+    #TODOSTE:
+    reverse=True
+    if reverse:
+        sim_waypoint_list_left =  map_data["right_lane"].reverse()
+        sim_waypoint_list_right = map_data["left_lane"].reverse()
+        sim_waypoint_list_center = map_data["sim_waypoint_list"].reverse()
+    else:
+        sim_waypoint_list_left =  map_data["left_lane"]
+        sim_waypoint_list_right = map_data["right_lane"]
+        sim_waypoint_list_center = map_data["sim_waypoint_list"]
 
 
 
@@ -73,8 +80,8 @@ def obstacleAvoidance_node():
             min_distance = float('inf')
             # Slice waypoints based on current waypoint index
             current_index = current_waypoint_index   #TODO: careful with current_waypoint_index being uninitialized in case there are no waypoints yet
-            left_waypoints = sim_waypoint_list_left[current_index:]
-            right_waypoints = sim_waypoint_list_right[current_index:]
+            left_waypoints = sim_waypoint_list_left
+            right_waypoints = sim_waypoint_list_right
 
             # Find closest lane
             for lane, waypoints in [("left", left_waypoints), ("right", right_waypoints)]:
@@ -100,14 +107,14 @@ def obstacleAvoidance_node():
                 if closest_lane == "right":
                     wp_list = list(map(lambda pair:Waypoint(pair[0], pair[1]), sim_waypoint_list_center))
                     pub_waypoint.publish(False,wp_list)
-                    time.sleep(0.3)
+                    time.sleep(0.4)
                     wp_list = list(map(lambda pair:Waypoint(pair[0], pair[1]), sim_waypoint_list_left))
                     pub_waypoint.publish(False,wp_list)
                     current_lane = "left"
                 elif closest_lane == "left":
                     wp_list = list(map(lambda pair:Waypoint(pair[0], pair[1]), sim_waypoint_list_center))
                     pub_waypoint.publish(False,wp_list)
-                    time.sleep(0.3)
+                    time.sleep(0.4)
                     wp_list = list(map(lambda pair:Waypoint(pair[0], pair[1]), sim_waypoint_list_right))
                     pub_waypoint.publish(False,wp_list)
                     current_lane = "right"
