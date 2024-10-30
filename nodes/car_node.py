@@ -13,16 +13,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
 import asyncio
 import rospy
 from mixed_reality.msg import Control
@@ -122,7 +112,7 @@ async def car_node():
     rospy.init_node("car_node",anonymous=True)
     rospy.Subscriber("control/throttle_steering", Control, new_throttle_steering)
     rospy.Subscriber("throttle/multiplier", Float64, new_multiplier)
-    rospy.Subscriber("/going", Bool, new_going)
+    # rospy.Subscriber("/going", Bool, new_going)
     rate = rospy.Rate(20)   #Rate is set to 20Hz because the car reports running at 20Hz
 
     global websocket
@@ -135,9 +125,9 @@ async def car_node():
                 print("connection established succesfully!")
 
                 while not rospy.is_shutdown():
-                    if going:
-                        await send_commands(websocket)
-                        print(f"throttle {throttle}\nsteering: {steering}\nmultiplier {throttle_multiplier}")
+                    # if going:
+                    await send_commands(websocket)
+                    print(f"throttle {throttle}\nsteering: {steering}\nmultiplier {throttle_multiplier}")
                     rate.sleep()
                     """
                     command = {
