@@ -30,7 +30,7 @@ def parse_model_outputs(outputs):
         return res
 
 
-MODEL_PATH = '/home/ast/Documents/sdsandbox_perturbations_mixed/models/test_06_24.h5'
+MODEL_PATH = 'models/model_trained_on_real.h5'
 FIXED_THROTTLE = True
 STEERING = 0
 THROTTLE = 1
@@ -87,7 +87,7 @@ def model_node():
     rospy.init_node("model_node", anonymous=True)
     #rospy.Subscriber("sim/image", SensorImage, new_image)
     #rospy.Subscriber("sim/image_for_model", numpy_msg(Floats), new_image)
-    rospy.Subscriber("mixed_image", SensorImage, new_image)
+    rospy.Subscriber("sim/image", SensorImage, new_image)
 
     rospy.spin()
 
