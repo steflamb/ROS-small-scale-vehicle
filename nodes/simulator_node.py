@@ -34,6 +34,45 @@ from mixed_reality.utils.for_conversions import For_convertion_utils
 
 
 
+SIZE_FACTOR = rospy.get_param("size_factor")
+X_MAP_SHIFT = rospy.get_param("x_map_shift")
+Y_MAP_SHIFT = rospy.get_param("y_map_shift")
+ANGLE_SHIFT = rospy.get_param("angle_shift")
+  
+map_name = rospy.get_param("map_name")
+
+simulator_ip = rospy.get_param("simulator_ip")
+simulator_port = rospy.get_param("simulator_port")
+MAPPING = rospy.get_param("mapping")
+TRACKING = rospy.get_param("tracking")
+
+for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
+position_tracked = False
+
+#collection of variables that might be changed through ROS later
+simulator_client = None
+
+simulator_pose=[0.,0.,0.]
+simulator_orientation=[0.,0.,0.]
+
+simulator_cte=0.0
+
+sim_image=None
+sim_image_for_model=None
+
+collision=None
+
+simulated_speed=0.0
+
+tracked_pose_sim=[1.,0.,1.]
+
+throttle = 0
+steering = 0
+throttle_multiplier = rospy.get_param("default_throttle_multiplier")
+
+counter=0
+prev_time=datetime.now()
+
 
 class DonkeySimMsgHandler(IMesgHandler):
     def __init__(self):
@@ -155,50 +194,6 @@ class DonkeySimMsgHandler(IMesgHandler):
             'road_style': road_style.__str__(),
             'rand_seed': rand_seed.__str__(),
             'turn_increment': turn_increment.__str__() }
-
-
-
-
-SIZE_FACTOR=7.33
-X_MAP_SHIFT=48
-Y_MAP_SHIFT=50
-ANGLE_SHIFT=0
-for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
-  
-map_name = rospy.get_param("map_name")
-
-#TODO: move to a config file
-simulator_ip = "127.0.0.1"
-simulator_port = 9091
-MAPPING = True
-TRACKING = True
-position_tracked = False
-
-
-
-#collection of variables that might be changed through ROS later
-simulator_client = None
-
-simulator_pose=[0.,0.,0.]
-simulator_orientation=[0.,0.,0.]
-
-simulator_cte=0.0
-
-sim_image=None
-sim_image_for_model=None
-
-collision=None
-
-simulated_speed=0.0
-
-tracked_pose_sim=[1.,0.,1.]
-
-throttle = 0
-steering = 0
-throttle_multiplier = 1.0
-
-counter=0
-prev_time=datetime.now()
 
 
 

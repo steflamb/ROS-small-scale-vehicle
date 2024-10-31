@@ -30,8 +30,8 @@ def parse_model_outputs(outputs):
         return res
 
 
-MODEL_PATH = 'models/model_trained_on_real.h5'
-FIXED_THROTTLE = True
+MODEL_PATH = rospy.get_param("model_path")
+FIXED_THROTTLE = rospy.get_param("fixed_throttle")
 STEERING = 0
 THROTTLE = 1
 
@@ -85,6 +85,8 @@ def model_node():
     print("MODEL COMPILED")
 
     rospy.init_node("model_node", anonymous=True)
+
+    #TODO: subscribe to the appropriate image topic corresponding to the parameters set in the launchfile (real, mixed, or sim image)
     #rospy.Subscriber("sim/image", SensorImage, new_image)
     #rospy.Subscriber("sim/image_for_model", numpy_msg(Floats), new_image)
     rospy.Subscriber("sim/image", SensorImage, new_image)

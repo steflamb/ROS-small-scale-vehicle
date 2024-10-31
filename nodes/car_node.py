@@ -10,12 +10,13 @@ import json
 import time
 import asyncio
 
-uri = "ws://team10.local:8887/wsDrive"
-websocket = None
+uri = rospy.get_param("driving_websocket")
 
+
+websocket = None
 throttle=0
 steering=0
-throttle_multiplier = 0.3
+throttle_multiplier = rospy.get_param("default_throttle_multiplier")
 stopping = False
 brake = False
 reverse = False

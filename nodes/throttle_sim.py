@@ -24,13 +24,16 @@ class PIDController:
 
 
 #TODO: move the following to a config file later
-SIZE_FACTOR=7.33
+SIZE_FACTOR = rospy.get_param("size_factor")
 
 #variables that might be changed through ROS later
-speed_threshold_min = 0.4
+speed_threshold_min = rospy.get_param("default_target_speed")
 simulated_speed = 0.0
-throttle_multiplier = 0.3
+throttle_multiplier = rospy.get_param("default_throttle_multiplier")
 driving = False
+kp = rospy.get_param("sim_kp")
+ki = rospy.get_param("sim_ki")
+kd = rospy.get_param("sim_kd")
 
 def new_speed_threshold_min(msg):
     global speed_threshold_min
@@ -59,6 +62,9 @@ def throttle_sim():
     global driving
     global speed_threshold_min
     global simulated_speed
+    global kp
+    global ki
+    global kd
     print("simulated throttle node running")
 
     rospy.init_node('throttle_node_sim', anonymous=True)
@@ -68,7 +74,7 @@ def throttle_sim():
     throttle_pub = None
     rate = rospy.Rate(50)
 
-    pid_controller = PIDController(kp=0.5, ki=0.0001, kd=0.1)
+    pid_controller = PIDController(kp, ki, kd)
 
     while not rospy.is_shutdown():
         if throttle_pub is None:

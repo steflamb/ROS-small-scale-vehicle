@@ -7,10 +7,7 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 
 
-
-video_source = 'http://team10.local:8890/video'
-
-
+video_source = rospy.getparam("video_source")
 
 
 def camera_node():

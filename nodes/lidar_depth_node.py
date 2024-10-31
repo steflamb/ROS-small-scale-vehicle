@@ -11,7 +11,7 @@ import requests
 from PIL import Image as PILImage
 
 
-video_source = 'http://team10.local:8890/lidar'
+video_source = rospy.get_param("lidar_source")
 
 
 

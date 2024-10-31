@@ -20,10 +20,10 @@ from mixed_reality.utils.for_conversions import For_convertion_utils
 
 
 #TODO: check if these conv. parameters are fine or need to be readjusted
-SIZE_FACTOR=7.33
-X_MAP_SHIFT=48
-Y_MAP_SHIFT=50
-ANGLE_SHIFT=0
+SIZE_FACTOR = rospy.get_param("size_factor")
+X_MAP_SHIFT = rospy.get_param("x_map_shift")
+Y_MAP_SHIFT = rospy.get_param("y_map_shift")
+ANGLE_SHIFT = rospy.get_param("angle_shift")
 
 
 

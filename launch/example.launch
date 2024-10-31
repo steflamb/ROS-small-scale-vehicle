@@ -1,6 +1,59 @@
 <?xml version="1.0"?>
 
 <launch>
+    <arg name="mapping" default="true" />
+    <arg name="tracking" default="true" />
+
+    <arg name="adjust_throttle" default="true" />
+
+    <arg name="lidar" default="false" />
+    <arg name="lattice" default="false" />
+    <arg name="lane_changing" default="false" />
+    <arg name="model" default="false" />
+    <arg name="real" default="false" />
+    <arg name="mixed" default="true" />
+    <arg name="sim" default="false" />
+
+
     <rosparam command="load" file="$(find mixed_reality)/launch/params.yaml" />
-    <node name="sim_node" pkg="mixed_reality" type="simulator_node.py" cwd="node"/>
+    <param name="mapping" value="$(arg mapping)" />
+    <param name="tracking" value="$(arg tracking)" />
+    <param name="real" value="$(arg real)" />
+    <param name="mixed" value="$(arg mixed)" />
+    <param name="sim" value="$(arg sim)" />
+
+    <node name="sim_node" pkg="mixed_reality" type="simulator_node.py" cwd="node" required="true"/>
+    <node name="control_node" pkg="mixed_reality" type="control_node.py" cwd="node"/>
+    <node name="keyboard_node" pkg="mixed_reality" type="keyboard_node.py" cwd="node" required="true" output="screen"/>
+    <group if="$(arg tracking)">
+        <node name="tracking_node" pkg="mixed_reality" type="tracking_with_phone.py" cwd="node"/>
+        <node name="car_node" pkg="mixed_reality" type="car_node.py" cwd="node"/>
+    </group>
+    <group if="$(arg adjust_throttle)">
+        <node name="throttle_sim" pkg="mixed_reality" type="throttle_sim.py" cwd="node"/>
+        <group if="$(arg tracking)">
+            <node name="throttle_car" pkg="mixed_reality" type="throttle_car.py" cwd="node"/>
+        </group>
+    </group>
+    <group if="$(arg lidar)">
+        <node name="lidar_depth_node" pkg="mixed_reality" type="lidar_depth_node.py" cwd="node"/>
+        <node name="pointcloud_node" pkg="mixed_reality" type="pointcloud_node.py" cwd="node"/>
+    </group>
+    <group if="$(arg lattice)">
+        <node name="lattice_planner" pkg="mixed_reality" type="lattice_planner.py" cwd="node"/>
+    </group>
+    <group if="$(arg lane_changing)">
+        <node name="obstacle_avoidance" pkg="mixed_reality" type="obstacleAvoidance_node.py" cwd="node"/>
+    </group>
+    <group if="$(arg model)">
+        <node name="model_node" pkg="mixed_reality" type="model_node.py" cwd="node"/>
+        <group if="$(arg real)">
+            <node name="car_camera" pkg="mixed_reality" type="camera_node.py" cwd="node"/>
+        </group>
+        <group if="$(arg mixed)">
+            <node name="car_camera" pkg="mixed_reality" type="camera_node.py" cwd="node"/>
+            <node name="mixer_node" pkg="mixed_reality" type="mixer_node.py" cwd="node"/>
+        </group>
+    </group>
+
 </launch>

@@ -20,13 +20,13 @@ TODO: brake
 TODO: change lanes
 """
 
-throttle_multiplier = 0.3
+throttle_multiplier = rospy.get_param("default_throttle_multiplier")
 
 
-SIZE_FACTOR=7.33
-X_MAP_SHIFT=48
-Y_MAP_SHIFT=50
-ANGLE_SHIFT=0
+SIZE_FACTOR = rospy.get_param("size_factor")
+X_MAP_SHIFT = rospy.get_param("x_map_shift")
+Y_MAP_SHIFT = rospy.get_param("y_map_shift")
+ANGLE_SHIFT = rospy.get_param("angle_shift")
 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
 
 

@@ -380,12 +380,12 @@ obstacle_array = np.array([])   #obstacle_array keeps Obstacle objects
 #NOTE: the pose and speed will be in the frame of reference of the simulator, angle is in degrees
 pose = [100,100,100]
 speed = 0.0
-SIZE_FACTOR=7.33
-X_MAP_SHIFT=48
-Y_MAP_SHIFT=50
-ANGLE_SHIFT=0
+SIZE_FACTOR = rospy.get_param("size_factor")
+X_MAP_SHIFT = rospy.get_param("x_map_shift")
+Y_MAP_SHIFT = rospy.get_param("y_map_shift")
+ANGLE_SHIFT = rospy.get_param("angle_shift")
 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
-TRACKING = False
+TRACKING = rospy.get_param("tracking")
 got_pose = False
 
 def new_pose(msg):

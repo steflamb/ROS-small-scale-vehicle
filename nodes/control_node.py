@@ -16,18 +16,16 @@ from mixed_reality.utils.control_utils import Waypoint_control_utils
 
 
 #TODO: move this to a config file
-control_uri = "ws://team10.local:8887/wsDrive"
-FIXED_THROTTLE = True
-REAL_CONTROLS = True
-WAYPOINT_THRESHOLD = 2.5
-# WAYPOINT_THRESHOLD = 0.3*7.33
-ANGLE_THRESHOLD = 0
+WAYPOINT_THRESHOLD = rospy.get_param("waypoint_threshold")
+ANGLE_THRESHOLD = rospy.get_param("angle_threshold")
 
-SIZE_FACTOR=7.33
-X_MAP_SHIFT=48
-Y_MAP_SHIFT=50
-ANGLE_SHIFT=0
+SIZE_FACTOR = rospy.get_param("size_factor")
+X_MAP_SHIFT = rospy.get_param("x_map_shift")
+Y_MAP_SHIFT = rospy.get_param("y_map_shift")
+ANGLE_SHIFT = rospy.get_param("angle_shift")
 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
+
+TRACKING = rospy.get_param("tracking")
 
 
 
@@ -45,7 +43,7 @@ current_waypoint_index = 0
 following_waypoints = False
 pub_throttle_steering = None
 
-TRACKING = True
+
 
 
 
@@ -155,9 +153,7 @@ def new_pose(msg):
 
 def control_node():
     print("Starting control node")
-    global control_uri      #param
-    global FIXED_THROTTLE   #param
-    global REAL_CONTROLS    #param (maybe unnecessary)
+
     global following_waypoints #set by keyboard
     global throttle     #
     global steering

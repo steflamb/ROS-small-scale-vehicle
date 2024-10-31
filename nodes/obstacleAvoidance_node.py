@@ -9,11 +9,11 @@ import math
 import time
 
 
-THRESHOLD = 8
+THRESHOLD = rospy.get_param("obstacle_distance_threshold")
 
 simulator_pose = [0.0,0.0,0.0]
 current_waypoint_index = 0
-current_lane = "left"
+current_lane = rospy.get_param("initial_lane")
 obstacles = {}
 """ Example obstacle dictionary:
 {
