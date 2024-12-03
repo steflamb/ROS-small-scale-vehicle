@@ -205,6 +205,9 @@ def new_pose(msg):
     global position_tracked
     global for_conversions
 
+    if TRACKING and not MAPPING and position_tracked:
+        return
+
     position = (
         msg.pose.position.x,
         msg.pose.position.y,
@@ -223,12 +226,14 @@ def new_pose(msg):
 
     #orientation = [r, p, y]
     #print(orientation)
-    tracked_pose_sim = for_conversions.real2sim_xyp([position[0], position[1], r])
+   
     #print(tracked_pose_sim)
 
     time_now=datetime.now()
     counter+=1
     if MAPPING and (time_now-prev_time)>timedelta(0,0,microseconds=20) or not MAPPING and TRACKING and not position_tracked:
+    # if MAPPING or not MAPPING and TRACKING and not position_tracked:
+        tracked_pose_sim = for_conversions.real2sim_xyp([position[0], position[1], r])
         simulator_client.msg_handler.send_pose(tracked_pose_sim)
         prev_time=time_now
         position_tracked = True
@@ -372,9 +377,10 @@ def simulator_node():
 
     while not rospy.is_shutdown():
 
-        if TRACKING and not position_tracked:
+        while TRACKING and not position_tracked:
             #initial pose of the car has not been sent to the simulator yet, we'll have to wait for it
-            continue
+            pass
+
 
 
         #publishing the simulator position and angle
@@ -440,6 +446,7 @@ def simulator_node():
             pub_sim_obstacles = rospy.Publisher("obstacles", Obstacles, queue_size=10)
         pub_sim_obstacles.publish(list(map(lambda o:SimPose(o[0],o[1],o[2],o[3],o[4],o[5],o[6]),map_data["obstacles"])))
 
+        print(".")
 
 
         rate.sleep()
