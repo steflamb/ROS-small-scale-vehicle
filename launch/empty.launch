@@ -11,8 +11,8 @@
     <arg name="lane_changing" default="false" />
     <arg name="model" default="false" />
     <arg name="real" default="false" />
-    <arg name="mixed" default="true" />
-    <arg name="sim" default="false" />
+    <arg name="mixed" default="false" />
+    <arg name="sim" default="true" />
 
 
     <rosparam command="load" file="$(find mixed_reality)/launch/params.yaml" />
