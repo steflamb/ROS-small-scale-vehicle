@@ -74,7 +74,7 @@ def detect_objects(cap,perspective_matrix,perspective_matrix2,scale_1,scale_2,de
                 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
 
                 rospy.init_node("tracking_phone")
-                rate = rospy.Rate(20)   #small rate to not overwhel the simulator
+                # rate = rospy.Rate(10)   #small rate to not overwhel the simulator
                 while not rospy.is_shutdown():
                     
                     if pose_pub is None:
@@ -85,6 +85,8 @@ def detect_objects(cap,perspective_matrix,perspective_matrix2,scale_1,scale_2,de
                         obstacle_pub = rospy.Publisher("obstacles", Obstacles, queue_size=10)
 
                     ret, frame = cap.read()
+                    # ret = True
+                    # frame = cv2.imread("/home/ast/catkin_ws/src/mixed_reality/nodes/dummy_iphone_picture.jpg")
                     frame = cv2.flip(frame, 0)
                     frame = cv2.flip(frame, 1)
 
@@ -110,7 +112,7 @@ def detect_objects(cap,perspective_matrix,perspective_matrix2,scale_1,scale_2,de
                                 perspective_matrix2 = cv2.getPerspectiveTransform(src_pts, dst_pts)
                         ##########################
 
-                        rectified_frame = cv2.warpPerspective(frame, perspective_matrix, (frame.shape[1], frame.shape[0]))
+                        rectified_frame = cv2.warpPerspective(frame, perspective_matrix2, (int(scale_1*200), int(scale_2*200)))
 
                         for id in objects_list.keys():
                             center_marker, corners_marker = get_marker_id(frame,detector,id)
@@ -121,7 +123,7 @@ def detect_objects(cap,perspective_matrix,perspective_matrix2,scale_1,scale_2,de
                                 y = scale_2 * (1 - transformed_center_local[1] / int(scale_2*200))
                                 corners = corners_marker
                                 corners_np = np.array([corners], dtype=np.float32)
-                                transformed_corners[id] = cv2.perspectiveTransform(corners_np, perspective_matrix)
+                                transformed_corners[id] = cv2.perspectiveTransform(corners_np, perspective_matrix2)
                                 vector_side[id] = transformed_corners[id][0][1] - transformed_corners[id][0][2]
                                 angle = 360-(((np.degrees(np.arctan2(vector_side[id][1], vector_side[id][0])))+90) % 360)
 
@@ -130,7 +132,7 @@ def detect_objects(cap,perspective_matrix,perspective_matrix2,scale_1,scale_2,de
                                 scaled_coordinates[id]=[x_shifted,y_shifted,angle]
 
                                 if plot:
-                                    transformed_center[id] = cv2.perspectiveTransform(center_marker_np, perspective_matrix)[0][0]
+                                    transformed_center[id] = cv2.perspectiveTransform(center_marker_np, perspective_matrix2)[0][0]
 
 
                             else:
@@ -186,7 +188,7 @@ def detect_objects(cap,perspective_matrix,perspective_matrix2,scale_1,scale_2,de
                                     #TODO: check if translations need to be divided by 1000 or not
                                     x,y,a = for_conversions.real2sim_xyp([scaled_coordinates[id][0],scaled_coordinates[id][1],scaled_coordinates[id][2]])
                                     #TODO: check if z-transaltion of 0 is fine
-                                    obstacles.append(SimPose(objects_list[id],x,y,0.2,a,-89.99,0))
+                                    obstacles.append(SimPose(objects_list[id],x,y,-0.1,a,-89.99,0))
 
                                 if plot:
                                     for corner in transformed_corners[id][0]:
@@ -213,7 +215,7 @@ def detect_objects(cap,perspective_matrix,perspective_matrix2,scale_1,scale_2,de
 
                         frame_number+=1
 
-                        rate.sleep()
+                    # rate.sleep()
 
             except KeyboardInterrupt:
                 print("\nloop stopped.")
@@ -246,13 +248,14 @@ def main():
     _,port=list_ports()
     cap = cv2.VideoCapture(0)  # 0 represents the default webcam, change it if necessary
 
-    x_cam,y_cam,fps=720,1280,60
+    # x_cam,y_cam,fps=720,1280,60
+    x_cam,y_cam,fps=640,480,60
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, y_cam)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, x_cam)
     cap.set(cv2.CAP_PROP_FPS, fps)
     aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
-    scale_1 = 5.20
-    scale_2 = 2.5
+    scale_1 = 4.97
+    scale_2 = 2.44
     parameters = cv2.aruco.DetectorParameters()
     detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
     frame_count=0
@@ -262,8 +265,12 @@ def main():
         10: "donkey",
         11: "barrier"
     }
+    stored = False
     while frame_count < 50:
         ret, frame = cap.read()
+        # if ret and not stored:
+        #     cv2.imwrite("dummy_iphone_picture.jpg",frame)
+        #     stored = True
         frame = cv2.flip(frame, 0)
         frame = cv2.flip(frame, 1)
         if not ret:
