@@ -19,6 +19,9 @@ import tf
 from mixed_reality.lattice_planner import cubic_spline, quintic_polynomial, quartic_polynomial, env, draw, frenet
 from mixed_reality.utils.for_conversions import For_convertion_utils
 
+map_name = rospy.get_param("map_name")
+
+
 #TODO: revert parameters to the ones on the reference/original file
 class C:
     # Parameter
@@ -385,7 +388,7 @@ X_MAP_SHIFT = rospy.get_param("x_map_shift")
 Y_MAP_SHIFT = rospy.get_param("y_map_shift")
 ANGLE_SHIFT = rospy.get_param("angle_shift")
 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
-TRACKING = rospy.get_param("tracking")
+MAPPING = rospy.get_param("mapping")
 got_pose = False
 
 def new_pose(msg):
@@ -393,7 +396,7 @@ def new_pose(msg):
     global for_conversions
     global got_pose
 
-    if TRACKING:
+    if MAPPING:
         position = (
             msg.pose.position.x,
             msg.pose.position.y,
@@ -415,7 +418,7 @@ def new_pose(msg):
 
 def new_speed(msg):
     global speed
-    if TRACKING:
+    if MAPPING:
         speed = msg.data*SIZE_FACTOR
     else:
         speed = msg.data
@@ -447,12 +450,13 @@ def main_Crusing():
     global bad_angle
     global bad_collision
     ENV = env.ENVCrusing()
-    if TRACKING:
+    if MAPPING:
         C.K_SIZE = 1
     K_SIZE = 1
 
     #TODO: change this manual read to a request to the environment server
-    f = open("map.json", "r")
+    global map_name
+    f = open(map_name, "r")
     map_data = json.loads(f.read())
     f.close()
     waypoints = map_data["right_lane"]
@@ -507,7 +511,7 @@ def main_Crusing():
     print("lattice node initialized")
     pub_waypoints = rospy.Publisher("waypoints", WaypointList, queue_size=10)
     rospy.Subscriber("obstacles", Obstacles, new_obstacles)
-    if TRACKING:
+    if MAPPING:
         rospy.Subscriber("donkey/pose", PoseStamped, new_pose)
         rospy.Subscriber("donkey/speed", Float64, new_speed)
     else:
