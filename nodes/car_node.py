@@ -140,7 +140,9 @@ async def car_node():
                 await websocket.close()
                 print("Connection closed")
         except Exception as e:
+            print("got exception")
             print(e)
+        print("retrying")
     
     
     rospy.spin()
