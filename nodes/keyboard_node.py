@@ -2,7 +2,7 @@
 
 import rospy
 from std_msgs.msg import Bool, Float64, String
-from mixed_reality.msg import WaypointList, Waypoint
+from mixed_reality.msg import WaypointList, Waypoint, SimPose
 import json
 import os
 import time
@@ -29,17 +29,24 @@ Y_MAP_SHIFT = rospy.get_param("y_map_shift")
 ANGLE_SHIFT = rospy.get_param("angle_shift")
 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
 
+map_name = rospy.get_param("map_name")
+
 
 speed = 0
 def new_speed(msg):
     global speed
     speed = msg.data
 
+sim_pose = None
+def new_pose(msg):
+    global sim_pose
+    sim_pose = [msg.x,msg.z]
 
 
 def keyboard_node():
     global throttle_multiplier
     global for_conversions
+    global sim_pose
 
 
     rospy.init_node("keyboard_node", anonymous=True)
@@ -91,41 +98,62 @@ def keyboard_node():
             if len(message.split("w:"))>1 and len(message.split("w:")[1].split(","))==2:
                 real_x, real_y=message.split("w:")[1].split(",")
                 sim_pose = for_conversions.real2sim_xyp([float(real_x),float(real_y),0])
-                wp = Waypoint(sim_pose[0],sim_pose[1])
+                wp  = Waypoint(sim_pose[0],sim_pose[1])
                 wp_list = [wp]
                 pub_waypoint.publish(True,wp_list)
                 print(f"Going to waypoint {wp}")
             else:
                 print("There was an error parsing the waypoint\nExample usage: 'w: 1.0, 0.8'")
         elif "demo" in message:
-            f = open("closed_road_shape.json", "r")
+            f = open(map_name, "r")
             map_data = json.loads(f.read())
             f.close()
 
-            reverse=True   #TODOSTE: remove this reversal
+            reverse=True
             lane="left"
 
             if reverse and lane=="right":
                 lane_map="left"
             elif reverse and lane=="left":
                 lane_map="right"
-            wp = map_data[f"{lane_map}_lane"]
+            else:
+                lane_map=lane
+
+            if lane=="center":
+                wp=map_data["sim_waypoint_list"]
+            else:    
+                wp = map_data[f"{lane_map}_lane"]
+
+
+
+
+
+            
             wp_list = list(map(lambda pair:Waypoint(pair[0], pair[1]), wp))
             if reverse:
                 wp_list.reverse()
             pub_waypoint.publish(True,wp_list)
             pub_current_lane.publish(lane)
         elif "forward" in message:
+            #forward 0.39 1
             print("starting forward difference experiment")
             parts = message.split(" ")
             throttle = float(parts[1])
-            duration = float(parts[2])
+            duration = 4
+            # iter = int(parts[2])
+            
+            
             steering = 0
             print(f"applying throttle {throttle} for {duration} seconds")
+            # command = "rosbag record -O t"+"%0.2f"%throttle+"_"+str(iter)+" /donkey/pose /sim/euler /donkey/speed /control/throttle_steering /sim/speed /going /reset"
+            # print(command)
+            # os.system(command)
+            # time.sleep(0.5)
             pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
             pub_throttle_multiplier.publish(1)
             sim_mult = rospy.Publisher("throttle_sim/multiplier", Float64, queue_size=10)
             sim_mult.publish(1)
+            
             start = time.time()
             while time.time()-start <duration:
                 pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
@@ -134,8 +162,11 @@ def keyboard_node():
             print("starting arc difference experiment")
             parts = message.split(" ")
             steering = float(parts[1])
-            throttle = float(parts[2])
-            duration = float(parts[3])
+            throttle = 0.365
+            duration = 10
+            #duration = 8
+            # duration = 6
+            
             print(f"applying steering {steering} an throttle {throttle} fro {duration} seconds")
             pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
             pub_throttle_multiplier.publish(1)
@@ -146,23 +177,127 @@ def keyboard_node():
                 pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
             pub_throttle_steering.publish(Control(0,steering,True,False,True))
         elif "braking" in message:
+            global speed
             print("starting braking behaviour experiment")
-            parts = message.split(" ")
+            # parts = message.split(" ")
             steering = 0
-            throttle = float(parts[1])
-            target = float(parts[2])
-            rospy.Subscriber("donkey/speed", new_speed)
+            throttle = 1
+            target = 1
+            rospy.Subscriber("donkey/speed", Float64, new_speed)
             print(f"applying throttle {throttle} until speed is {target}")
             pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
-            pub_throttle_multiplier.publish(1)
-            sim_mult = rospy.Publisher("throttle_sim/multiplier", Float64, queue_size=10)
-            sim_mult.publish(1)
-            while abs(speed-target)>0.1:
+            while target-speed>0.1:
                 pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
             print("speed reaches, applying brakes")
             while speed>0.1:
                 pub_throttle_steering.publish(Control(0,steering,True,False,True))
             print("braking operation is over")
+        elif "pid" in message:
+            steering = -0.6
+            throttle = 1
+            pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
+            time_block = 10
+            target = 0.4
+            print(f"Setting target speed to {target} for {time_block} seconds")
+            pub_target_speed.publish(target)
+            start = time.time()
+            while time.time() - start <time_block:
+                pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
+            target = 0.8
+            print(f"Setting target speed to {target} for {time_block} seconds")
+            pub_target_speed.publish(target)
+            while time.time() - start<2*time_block:
+                pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
+            target = 0.6
+            print(f"Setting target speed to {target} for {time_block} seconds")
+            pub_target_speed.publish(target)
+            while time.time() - start<3*time_block:
+                pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
+            # target = 0.6
+            # print(f"Setting target speed to {target} for {time_block} seconds")
+            # pub_target_speed.publish(target)
+            # while time.time() - start<4*time_block:
+            #     pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
+            target = 0
+            print(f"Setting target speed to {target} for {3} seconds")
+            pub_target_speed.publish(target)
+            while time.time() - start<3*time_block+3:
+                pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
+            print("EXPERIMENT DONE")
+        elif "straight" in message:
+            #get sim pose
+            rospy.Subscriber("sim/euler", SimPose, new_pose)
+            while sim_pose is None:
+                pass
+            
+            print("going to waypoint 15 sim units in front")
+            wp = Waypoint(sim_pose[0]+15,sim_pose[1])
+            wp_list = [wp]
+            pub_waypoint.publish(True,wp_list)
+        elif "close" in message:
+            #get sim pose
+            rospy.Subscriber("sim/euler", SimPose, new_pose)
+            while sim_pose is None:
+                pass
+            
+            print("going to waypoint 10 sim units in front, 5 to the left")
+            wp = Waypoint(sim_pose[0]+10,sim_pose[1]+5)
+            wp_list = [wp]
+            pub_waypoint.publish(True,wp_list)
+        elif "far" in message:
+            #get sim pose
+            rospy.Subscriber("sim/euler", SimPose, new_pose)
+            while sim_pose is None:
+                pass
+            
+            print("going to waypoint 20 sim units in front, 5 to the right")
+            wp = Waypoint(sim_pose[0]+20,sim_pose[1]-5)
+            wp_list = [wp]
+            pub_waypoint.publish(True,wp_list)
+
+        elif "sharp" in message:
+            #get sim pose
+            rospy.Subscriber("sim/euler", SimPose, new_pose)
+            while sim_pose is None:
+                pass
+            
+            print("sharp turn to the left")
+            wp_list = [Waypoint(sim_pose[0]+10,sim_pose[1]),
+                       Waypoint(sim_pose[0]+20,sim_pose[1]),
+                       Waypoint(sim_pose[0]+20,sim_pose[1]+10)
+                       ]
+            pub_waypoint.publish(True,wp_list)
+
+        elif "curve" in message:
+            #get sim pose
+            rospy.Subscriber("sim/euler", SimPose, new_pose)
+            while sim_pose is None:
+                pass
+            
+            print("curve to the right")
+            wp_list = [Waypoint(sim_pose[0]+8,sim_pose[1]+2),
+                       Waypoint(sim_pose[0]+14,sim_pose[1]+8),
+                       Waypoint(sim_pose[0]+20,sim_pose[1]+10)
+                       ]
+            pub_waypoint.publish(True,wp_list)
+
+        elif "stest" in message:
+            #get sim pose
+            rospy.Subscriber("sim/euler", SimPose, new_pose)
+            while sim_pose is None:
+                pass
+            
+            print("s shape road")
+            wp_list = [Waypoint(sim_pose[0]+6,sim_pose[1]+2),
+                       Waypoint(sim_pose[0]+9,sim_pose[1]+6),
+                       Waypoint(sim_pose[0]+14,sim_pose[1]+4),
+                       Waypoint(sim_pose[0]+16,sim_pose[1]),
+                       Waypoint(sim_pose[0]+18,sim_pose[1]-4),
+                       Waypoint(sim_pose[0]+24,sim_pose[1]-8),
+                       Waypoint(sim_pose[0]+27,sim_pose[1]+2)]
+            pub_waypoint.publish(True,wp_list)
+            
+
         else:
             print(f"Command '{message}' not recognized\n")
             print(help)
