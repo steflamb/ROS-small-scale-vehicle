@@ -15,7 +15,6 @@ from mixed_reality.utils.control_utils import Waypoint_control_utils
 
 
 
-#TODO: move this to a config file
 WAYPOINT_THRESHOLD = rospy.get_param("waypoint_threshold")
 ANGLE_THRESHOLD = rospy.get_param("angle_threshold")
 
@@ -25,12 +24,12 @@ Y_MAP_SHIFT = rospy.get_param("y_map_shift")
 ANGLE_SHIFT = rospy.get_param("angle_shift")
 for_conversions = For_convertion_utils(SIZE_FACTOR,X_MAP_SHIFT,Y_MAP_SHIFT,ANGLE_SHIFT)
 
-TRACKING = rospy.get_param("tracking")
+MAPPING = rospy.get_param("mapping")
+
+REPEAT = True
 
 
-
-
-throttle = 1.0
+throttle = 0.365
 steering = 0.0
 brake = False
 collision = "none"
@@ -125,7 +124,7 @@ def new_pose(msg):
     global sim_pose
     global sim_orientation
     global for_conversions
-    if TRACKING:
+    if MAPPING:
         position = (
             msg.pose.position.x,
             msg.pose.position.y,
@@ -166,10 +165,8 @@ def control_node():
     global pub_throttle_steering
     global sim_pose
     global sim_orientation
-    global TRACKING
-
-    #TODO: get rid of TESTING
-    TESTING = True
+    global MAPPING
+    global REPEAT
     
     rospy.init_node("control_node", anonymous=True)
     rospy.Subscriber("model/throttle_steering", Control, new_throttle_steering)
@@ -177,10 +174,11 @@ def control_node():
     rospy.Subscriber("going", Bool, new_going)
     rospy.Subscriber("waypoints", WaypointList, new_waypoints)
     #rospy.Subscriber("sim/pose", PoseStamped, new_sim_pose)
-    if TRACKING:
+    if MAPPING:
         rospy.Subscriber("donkey/pose", PoseStamped, new_pose)
     else:
         rospy.Subscriber("sim/euler", SimPose, new_pose)
+
     if pub_throttle_steering is None:
         pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control, queue_size=10)
     pub_current_waypoint_index = rospy.Publisher("control/current_waypoint_index", Int64, queue_size=10)
@@ -224,7 +222,7 @@ def control_node():
                         current_waypoint = waypoint_list[current_waypoint_index]
                         # print("Going to: ", current_waypoint)
                     else:
-                        if TESTING:
+                        if REPEAT:
                             print("reached final waypoint, looping")
                             current_waypoint_index = 0
                         else:
