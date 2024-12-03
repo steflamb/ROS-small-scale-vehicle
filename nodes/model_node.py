@@ -19,6 +19,7 @@ from mixed_reality.msg import Control
 
 from cv_bridge import CvBridge
 
+import time
 
 
 
@@ -40,7 +41,22 @@ pub_throttle_steering = None
 
 bridge = CvBridge()
 
+
+prev_time = None
 def new_image(msg):
+    global prev_time
+    if prev_time is None:
+         prev_time = time.time()
+    elif time.time()-prev_time > 0.25:
+        prev_time = time.time()
+    else:
+         return
+
+
+
+
+
+
     global STEERING
     global THROTTLE
     global FIXED_THROTTLE
@@ -50,12 +66,13 @@ def new_image(msg):
 
 
     image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-    #cv2.imshow("Received mixed image", image)
-    #cv2.waitKey(0)
+    # cv2.imshow("Received mixed image", image)
+    # cv2.waitKey(0)
 
     image = image[None, ...]
-    outputs = model.predict(image, verbose=0)
+    outputs = model.predict(image, verbose=1)
     parsed_outputs = parse_model_outputs(outputs)
+    print(parsed_outputs)
     steering = 0.
     throttle = 0.
     if len(parsed_outputs) > 0:        
@@ -87,9 +104,13 @@ def model_node():
     rospy.init_node("model_node", anonymous=True)
 
     #TODO: subscribe to the appropriate image topic corresponding to the parameters set in the launchfile (real, mixed, or sim image)
-    #rospy.Subscriber("sim/image", SensorImage, new_image)
-    #rospy.Subscriber("sim/image_for_model", numpy_msg(Floats), new_image)
-    rospy.Subscriber("sim/image", SensorImage, new_image)
+
+    if rospy.get_param("sim"):
+        rospy.Subscriber("sim/image", SensorImage, new_image)
+    elif rospy.get_param("mixed"):
+        rospy.Subscriber("sim/image", SensorImage, new_image)
+    else:
+        rospy.Subscriber("sim/image", SensorImage, new_image)
 
     rospy.spin()
 
@@ -101,4 +122,4 @@ if __name__ == '__main__':
     try:
         model_node()
     except rospy.ROSInterruptException:
-        pass
+            pass
