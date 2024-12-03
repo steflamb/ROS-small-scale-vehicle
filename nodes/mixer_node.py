@@ -41,7 +41,7 @@ def mixer_node():
 
     rospy.init_node("mixer_node", anonymous=True)
     rospy.Subscriber("camera", SensorImage, new_camera_image)
-    rospy.Subscriber("sim/image", SensorImage, new_simulator_image)
+    rospy.Subscriber("sim/image_for_mixing", SensorImage, new_simulator_image)
     pub_mixed = rospy.Publisher("mixed_image", SensorImage, queue_size=10)
     rate = rospy.Rate(50)
 
