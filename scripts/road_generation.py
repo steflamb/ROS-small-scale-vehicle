@@ -173,7 +173,7 @@ Y_MAP_SHIFT=50
 ANGLE_SHIFT=0
 
 #choose road
-ROAD_TYPE = 'Circle'
+ROAD_TYPE = 'Guericke_rotated'
 
 
 road_generation = Road_shapes_utils(SCALE_1, SCALE_2, X_MAP_SHIFT, Y_MAP_SHIFT, SIZE_FACTOR, ANGLE_SHIFT)
@@ -182,6 +182,11 @@ road_generation = Road_shapes_utils(SCALE_1, SCALE_2, X_MAP_SHIFT, Y_MAP_SHIFT, 
 if ROAD_TYPE=='Guericke':
         road_points=[[1.,-1.6],[0.2,-1.6],[-0.2,-1.6],[-0.75,-1.4],[-1,-0.8],[-1,0],[-1,0.8],[-1,1.6],[-1,2.2]]
         start_angle=+90
+        start_offset_real=None
+        initial_pose_sim,initial_pose_real,sim_waypoint_list,road_definition=road_generation.create_non_closed_road(road_points,start_angle,start_offset_real)
+if ROAD_TYPE=='Guericke_rotated':
+        road_points = [[-2,-0.8],[-2,0.0],[-2,0.4],[-1.8,0.95],[-1.2,1.2],[-0.4,1.2],[0.4,1.2],[1.2,1.2],[1.8,1.2]]
+        start_angle=+180
         start_offset_real=None
         initial_pose_sim,initial_pose_real,sim_waypoint_list,road_definition=road_generation.create_non_closed_road(road_points,start_angle,start_offset_real)
 if ROAD_TYPE=='Guericke_straight' or ROAD_TYPE=='Guericke_straight_obs':
@@ -213,7 +218,7 @@ if ROAD_TYPE=='Circuit_2':
         initial_pose_sim,initial_pose_real,sim_waypoint_list,road_definition=road_generation.create_non_closed_road(road_points,start_angle,start_offset_real)
 
 elif ROAD_TYPE=='Circle' or ROAD_TYPE=='Circle_obs':
-    radius_real=1.3
+    radius_real=1.1
     initial_pose_sim,initial_pose_real,sim_waypoint_list,road_definition=road_generation.create_circular_road(radius_real)
 
 #generate lanes
@@ -247,7 +252,7 @@ map = {
     "obstacles": obstacles
 }
 
-with open("map.json", "w") as f:
+with open("guericke.json", "w") as f:
     f.write(json.dumps(map))
 
 print(os.getcwd())
