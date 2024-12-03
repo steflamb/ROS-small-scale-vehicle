@@ -7,7 +7,7 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 
 
-video_source = rospy.getparam("video_source")
+video_source = rospy.get_param("video_source")
 
 
 def camera_node():
