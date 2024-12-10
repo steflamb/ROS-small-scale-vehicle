@@ -1,4 +1,5 @@
 import struct
+import re
 
 class ViconTrackerUtils:
     def __init__(self):
