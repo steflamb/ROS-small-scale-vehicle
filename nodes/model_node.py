@@ -108,9 +108,9 @@ def model_node():
     if rospy.get_param("sim"):
         rospy.Subscriber("sim/image", SensorImage, new_image)
     elif rospy.get_param("mixed"):
-        rospy.Subscriber("sim/image", SensorImage, new_image)
+        rospy.Subscriber("mixed_image", SensorImage, new_image)
     else:
-        rospy.Subscriber("sim/image", SensorImage, new_image)
+        rospy.Subscriber("camera", SensorImage, new_image)
 
     rospy.spin()
 

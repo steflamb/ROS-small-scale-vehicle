@@ -10,9 +10,9 @@
     <arg name="lattice" default="false" />
     <arg name="lane_changing" default="false" />
     <arg name="model" default="false" />
-    <arg name="real" default="false" />
+    <arg name="real" default="true" />
     <arg name="mixed" default="false" />
-    <arg name="sim" default="true" />
+    <arg name="sim" default="false" />
 
 
     <rosparam command="load" file="$(find mixed_reality)/launch/params.yaml" />
