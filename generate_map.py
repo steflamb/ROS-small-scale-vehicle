@@ -416,7 +416,7 @@ if __name__ == "__main__":
     output_filename = "road_totest2.json"
 
     # List of waypoints
-    road_points=[[0.0,-0.2],[0.0,0.2],[2.1,1.0]],[2.1,1.0],[1.2,0.6],[0.0,0.3],[-1.5,0.7],[-2,0.]]
+    road_points=[[0.0],]
     # road_points=road_points[::-1]
     # Starting orientation
     start_angle=0

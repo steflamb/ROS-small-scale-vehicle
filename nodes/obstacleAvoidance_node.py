@@ -48,7 +48,7 @@ def obstacleAvoidance_node():
     global current_lane
 
     #Load lane data from JSON map file
-    f = open("closed_road_shape.json", "r")
+    f = open("road_totest.json", "r")
     map_data = json.loads(f.read())
     f.close()
     #TODOSTE:
