@@ -282,11 +282,13 @@ def new_reset(msg):
     global simulator_client
     global position_tracked
     print("\nRESETTING SCENARIO")
+
     #read initial road configuration from json file
     f = open(map_name, "r")
     map_data = json.loads(f.read())
     f.close()
     simulator_client.msg_handler.reset_scenario(0,map_data["road_definition"])
+
     #send initial car pose
     initial_pose = map_data["initial_pose_sim"]
     print(f"initial pose_sim in map {initial_pose}")
@@ -294,23 +296,35 @@ def new_reset(msg):
     simulator_client.msg_handler.send_pose(initial_pose) 
     time.sleep(0.1) #CAUTION: if this waiting is excluded we get the wrong reading from the simulator
     print(f"current pose in sim {simulator_client.msg_handler.pos_x,simulator_client.msg_handler.pos_y,simulator_client.msg_handler.pos_z}")
+
+    #load obstacles
+    for obstacle in map_data["obstacles"]:
+        msg = { "msg_type" : "obstacle",
+                "name" : obstacle[0],
+                "x" : obstacle[1].__str__(),
+                "y" : obstacle[2].__str__(),
+                "z" : obstacle[3].__str__(),
+                "angle1" : obstacle[4].__str__(),
+                "angle2" : obstacle[5].__str__(),
+                "angle3" : obstacle[6].__str__()}
+        if simulator_client: 
+            simulator_client.queue_message(msg)
+            time.sleep(0.3)
+            print(f"{obstacle[0]} obstacle sent to sim")
+
     position_tracked = False
+    print("SCENARIO HAS BEEN FULLY RESET")
     
 
 
 def new_throttle_steering(msg):
-    #TODO: change behaviour if youre braking to stop
     global throttle
     global steering
     global simulator_client
     global throttle_multiplier
 
-    #throttle = msg.throttle*throttle_multiplier
     throttle = msg.throttle
     steering = msg.steering
-
-    #throttle = 0.3
-    #TODO: add throttle multiplier factor
 
     if abs(steering)>=1:
         if steering <0:
@@ -334,8 +348,6 @@ def new_throttle_steering(msg):
 def new_multiplier(msg):
     global throttle_multiplier
     throttle_multiplier = msg.data
-
-
 
 
 def simulator_node():
@@ -384,7 +396,7 @@ def simulator_node():
         rospy.Subscriber("throttle/multiplier", Float64, new_multiplier)
     else:
         rospy.Subscriber("throttle_sim/multiplier", Float64, new_multiplier)
-    rospy.Subscriber("obstacles", Obstacles, new_obstacles)
+    rospy.Subscriber("tracked/obstacles", Obstacles, new_obstacles)
     pub_simulator_pose = None
     pub_simulator_cte = None
     pub_sim_image = None
@@ -512,10 +524,9 @@ def simulator_node():
 
         #publish simulation-only objects
         if pub_sim_obstacles is None:
-            pub_sim_obstacles = rospy.Publisher("obstacles", Obstacles, queue_size=10)
+            pub_sim_obstacles = rospy.Publisher("sim/obstacles", Obstacles, queue_size=10)
         pub_sim_obstacles.publish(list(map(lambda o:SimPose(o[0],o[1],o[2],o[3],o[4],o[5],o[6]),map_data["obstacles"])))
 
-        # print(".")
 
 
         rate.sleep()

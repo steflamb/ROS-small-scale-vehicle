@@ -6,6 +6,11 @@ import math
 import struct
 import re
 
+import rospy
+from geometry_msgs.msg import PoseStamped
+from std_msgs.msg import Float64
+from mixed_reality.msg import SimPose, Obstacles
+
 
 class ViconTrackerUtils:
     def __init__(self):
@@ -158,7 +163,7 @@ def tracking_node():
         if speed_pub is None:
             speed_pub = rospy.Publisher("donkey/speed", Float64, queue_size=10)
         if obstacle_pub is None:
-            obstacle_pub = rospy.Publisher("obstacles", Obstacles, queue_size=10)
+            obstacle_pub = rospy.Publisher("tracked/obstacles", Obstacles, queue_size=10)
 
         # Retrieve the number of items and the items themselves
         items_in_block = data_dict.get("items_count", 0)

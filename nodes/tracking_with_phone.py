@@ -82,7 +82,7 @@ def detect_objects(cap,perspective_matrix,perspective_matrix2,scale_1,scale_2,de
                     if speed_pub is None:
                         speed_pub = rospy.Publisher("donkey/speed", Float64, queue_size=10)
                     if obstacle_pub is None:
-                        obstacle_pub = rospy.Publisher("obstacles", Obstacles, queue_size=10)
+                        obstacle_pub = rospy.Publisher("tracked/obstacles", Obstacles, queue_size=10)
 
                     ret, frame = cap.read()
                     # ret = True

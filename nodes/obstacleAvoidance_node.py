@@ -7,6 +7,7 @@ from mixed_reality.msg import SimPose, WaypointList, Waypoint, Obstacles
 import json
 import math
 import time
+import threading
 
 
 THRESHOLD = rospy.get_param("obstacle_distance_threshold")
@@ -14,6 +15,7 @@ THRESHOLD = rospy.get_param("obstacle_distance_threshold")
 simulator_pose = [0.0,0.0,0.0]
 current_waypoint_index = 0
 current_lane = rospy.get_param("initial_lane")
+lock = threading.Lock()
 obstacles = {}
 """ Example obstacle dictionary:
 {
@@ -22,10 +24,11 @@ obstacles = {}
 }
 """
 
-def new_obstacle(msg):
+def new_obstacles(msg):
     global obstacles
-    for obstacle in msg.data:
-        obstacles[obstacle.name] = [obstacle.x, obstacle.y]
+    with lock:
+        for obstacle in msg.data:
+            obstacles[obstacle.name] = [obstacle.x, obstacle.y]
 
 def new_current_waypoint_index(msg):
     global current_waypoint_index
@@ -65,7 +68,8 @@ def obstacleAvoidance_node():
 
 
     rospy.init_node("obstacleAvoidance_node.py", anonymous=True)
-    rospy.Subscriber("obstacles", Obstacles, new_obstacle)
+    rospy.Subscriber("sim/obstacles", Obstacles, new_obstacles)
+    rospy.Subscriber("tracked/obstacles", Obstacles, new_obstacles)
     rospy.Subscriber("control/current_waypoint_index", Int64, new_current_waypoint_index)
     rospy.Subscriber("sim/euler", SimPose, new_sim_pose)
     rospy.Subscriber("current_lane", String, new_lane)
@@ -74,6 +78,7 @@ def obstacleAvoidance_node():
 
 
     while not rospy.is_shutdown():
+        #TODO: instead of calculating the closest lane to all obstacles,filter first the obstacles that are close to donkeycar, then check lane
         debug_msg = ""
         for obstacle in obstacles.copy():
             closest_lane = None
@@ -100,7 +105,7 @@ def obstacleAvoidance_node():
 
             debug_msg = debug_msg+"Distance is " +str(distance)+"\n"
 
-            if distance < THRESHOLD and closest_lane and closest_lane == current_lane:
+            if distance < THRESHOLD and not closest_lane is None and closest_lane == current_lane:
                 print(f"\nFound {obstacle} in pose: {obstacles[obstacle]}, Lane: {closest_lane}")
                 print(f"current_waypoint index {current_waypoint_index}")
                 print("Changing lane")

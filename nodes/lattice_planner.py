@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 import time
+import threading
 
 import rospy
 from std_msgs.msg import Float64
@@ -377,7 +378,7 @@ def pi_2_pi(theta):
 
     return theta
 
-
+lock = threading.Lock()
 obstacle_dict = {}  #obstacle_dict keeps "name":[x,y]
 obstacle_array = np.array([])   #obstacle_array keeps Obstacle objects
 #NOTE: the pose and speed will be in the frame of reference of the simulator, angle is in degrees
@@ -427,13 +428,14 @@ def new_speed(msg):
 def new_obstacles(msg):
     global obstacle_dict
     global obstacle_array
-    for obstacle in msg.data:
-        obstacle_dict[obstacle.name] = [obstacle.x, obstacle.y]
-    new_array = np.array([])
-    for o in obstacle_dict:
-        obstacle = Obstacle(obstacle_dict[o][0], obstacle_dict[o][1], (3.14/2), C.W,C.RF)
-        new_array = np.append(new_array,obstacle)
-    obstacle_array = new_array
+    with lock:
+        for obstacle in msg.data:
+            obstacle_dict[obstacle.name] = [obstacle.x, obstacle.y]
+        new_array = np.array([])
+        for o in obstacle_dict:
+            obstacle = Obstacle(obstacle_dict[o][0], obstacle_dict[o][1], (3.14/2), C.W,C.RF)
+            new_array = np.append(new_array,obstacle)
+        obstacle_array = new_array
 
 
 def main_Crusing():
@@ -510,7 +512,8 @@ def main_Crusing():
     rospy.init_node("lattice_planner", anonymous=True)
     print("lattice node initialized")
     pub_waypoints = rospy.Publisher("waypoints", WaypointList, queue_size=10)
-    rospy.Subscriber("obstacles", Obstacles, new_obstacles)
+    rospy.Subscriber("sim/obstacles", Obstacles, new_obstacles)
+    rospy.Subscriber("tracked/obstacles", Obstacles, new_obstacles)
     if MAPPING:
         rospy.Subscriber("donkey/pose", PoseStamped, new_pose)
         rospy.Subscriber("donkey/speed", Float64, new_speed)
@@ -717,7 +720,8 @@ def main_Stopping():
     rospy.init_node("lattice_planner", anonymous=True)
     pub_waypoints = rospy.Publisher("waypoints", WaypointList, queue_size=10)
     rospy.Subscriber("donkey/pose", PoseStamped, new_pose)
-    rospy.Subscriber("obstacles", Obstacles, new_obstacles)
+    rospy.Subscriber("sim/obstacles", Obstacles, new_obstacles)
+    rospy.Subscriber("tracked/obstacles", Obstacles, new_obstacles)
 
     while True:
         path = lattice_planner_for_Stopping(l0, l0_v, l0_a, s0, s0_v, s0_a, ref_path)

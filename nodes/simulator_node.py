@@ -363,7 +363,7 @@ def simulator_node():
         rospy.Subscriber("throttle/multiplier", Float64, new_multiplier)
     else:
         rospy.Subscriber("throttle_sim/multiplier", Float64, new_multiplier)
-    rospy.Subscriber("obstacles", Obstacles, new_obstacles)
+    rospy.Subscriber("tracked/obstacles", Obstacles, new_obstacles)
     pub_simulator_pose = None
     pub_simulator_cte = None
     pub_sim_image = None
@@ -443,7 +443,7 @@ def simulator_node():
 
         #publish simulation-only objects
         if pub_sim_obstacles is None:
-            pub_sim_obstacles = rospy.Publisher("obstacles", Obstacles, queue_size=10)
+            pub_sim_obstacles = rospy.Publisher("sim/obstacles", Obstacles, queue_size=10)
         pub_sim_obstacles.publish(list(map(lambda o:SimPose(o[0],o[1],o[2],o[3],o[4],o[5],o[6]),map_data["obstacles"])))
 
         print(".")
