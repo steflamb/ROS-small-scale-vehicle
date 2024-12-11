@@ -109,8 +109,8 @@ def keyboard_node():
             map_data = json.loads(f.read())
             f.close()
 
-            reverse=True
-            lane="left"
+            reverse=False
+            lane="center"
 
             if reverse and lane=="right":
                 lane_map="left"

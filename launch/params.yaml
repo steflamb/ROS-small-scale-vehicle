@@ -1,4 +1,4 @@
-map_name: "road_totest.json"
+map_name: "crash test.json"
 
 video_source : 'http://team10.local:8890/video'
 driving_websocket : "ws://team10.local:8887/wsDrive"
