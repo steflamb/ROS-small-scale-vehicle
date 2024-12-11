@@ -78,9 +78,14 @@ def obstacleAvoidance_node():
 
 
     while not rospy.is_shutdown():
-        #TODO: instead of calculating the closest lane to all obstacles,filter first the obstacles that are close to donkeycar, then check lane
         debug_msg = ""
         for obstacle in obstacles.copy():
+            ego_x, ego_y = simulator_pose[0], simulator_pose[1]
+            #print(f"Car position: f{[ego_x,ego_y]}\nObstacle position: {obstacles[obstacle][0:2]}")
+            ego_distance = math.sqrt((obstacles[obstacle][0] - ego_x) ** 2 + (obstacles[obstacle][1] - ego_y) ** 2)
+            if ego_distance>THRESHOLD:
+                continue
+
             closest_lane = None
             min_distance = float('inf')
             # Slice waypoints based on current waypoint index
@@ -98,14 +103,9 @@ def obstacleAvoidance_node():
 
             debug_msg = debug_msg + str(obstacle)+ " in " +str(closest_lane)+" lane, current lane: " +str(current_lane)+"\n"
 
+            debug_msg = debug_msg+"Distance is " +str(ego_distance)+"\n"
 
-            ego_x, ego_y = simulator_pose[0], simulator_pose[1]
-            #print(f"Car position: f{[ego_x,ego_y]}\nObstacle position: {obstacles[obstacle][0:2]}")
-            distance = math.sqrt((obstacles[obstacle][0] - ego_x) ** 2 + (obstacles[obstacle][1] - ego_y) ** 2)
-
-            debug_msg = debug_msg+"Distance is " +str(distance)+"\n"
-
-            if distance < THRESHOLD and not closest_lane is None and closest_lane == current_lane:
+            if not closest_lane is None and closest_lane == current_lane:
                 print(f"\nFound {obstacle} in pose: {obstacles[obstacle]}, Lane: {closest_lane}")
                 print(f"current_waypoint index {current_waypoint_index}")
                 print("Changing lane")
