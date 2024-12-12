@@ -200,6 +200,9 @@ class DonkeySimMsgHandler(IMesgHandler):
         msg = { 'msg_type' : 'tracking', 'x': tracked_pose_sim[0].__str__(), 'y':tracked_pose_sim[1].__str__(), 'angle': tracked_pose_sim[2].__str__() }
         self.client.send_now(msg)
 
+    def send_obstacle(self, sim_msg):
+        self.client.send_now(sim_msg)
+
     def reset_scenario(self,road_style, waypoints: Union[str, None]):
         msg = {
             "msg_type": "regen_road",
@@ -274,8 +277,9 @@ def new_obstacles(msg):
                 "angle2" : obstacle.roll.__str__(),
                 "angle3" : obstacle.yaw.__str__() }  
         if simulator_client: 
-            simulator_client.queue_message(sim_msg)
-            time.sleep(0.1)
+            # simulator_client.queue_message(sim_msg)
+            simulator_client.msg_handler.send_obstacle(sim_msg)
+            # time.sleep(0.1)
 
 
 def new_reset(msg):
