@@ -169,6 +169,7 @@ include_directories(
 install(PROGRAMS
   scripts/*
   nodes/*
+  transforms/*
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
