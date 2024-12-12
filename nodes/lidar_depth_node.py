@@ -19,7 +19,8 @@ def lidar_depth_node():
     print("Starting lidar depth node")
 
     r = requests.get('http://team10.local:8890/lidar', stream=True)
-    print(type(r))
+    # print(type(r))
+    print("Connected to the car")
 
     if r.encoding is None:
         r.encoding = 'utf-8'

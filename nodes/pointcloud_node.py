@@ -11,10 +11,11 @@ import open3d as o3d
 """
 use the following command in terminal to be able to use rviz
 rosrun tf static_transform_publisher 0 0 0 0 0 0 1 map mymap 0
+rosrun tf static_transform_publisher 0 0 0 1.87 0 1.08 sim/car lidar 100
 """
 
 depth_data = None
-TESTING = True
+TESTING = False
 data_captured = False
 
 def new_depthmap(msg):
@@ -45,7 +46,7 @@ def generate_point_cloud(depth, intrinsic_mat):
             points.append([x[i], y[i],z[i],z[i]])
 
         header = Header()
-        header.frame_id = "map"
+        header.frame_id = "lidar"
         fields = [PointField('x', 0, PointField.FLOAT32, 1),
                       PointField('y', 8, PointField.FLOAT32, 1),
                       PointField('z', 16, PointField.FLOAT32, 1),
@@ -64,7 +65,7 @@ def generate_point_cloud(depth, intrinsic_mat):
 
         msg = PointCloud2()
         header = Header()
-        header.frame_id = "map"
+        header.frame_id = "lidar"
         msg.header = header
         msg.height = 192
         msg.width = 256
