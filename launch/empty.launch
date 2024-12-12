@@ -4,16 +4,9 @@
     <arg name="mapping" default="true" />
     <arg name="tracking" default="true" />
 
-    <arg name="adjust_throttle" default="true" />
-
-    <arg name="lidar" default="false" />
-    <arg name="lattice" default="false" />
-    <arg name="lane_changing" default="false" />
-    <arg name="model" default="false" />
     <arg name="real" default="false" />
-    <arg name="mixed" default="false" />
-    <arg name="sim" default="true" />
-
+    <arg name="mixed" default="true" />
+    <arg name="sim" default="false" />
 
     <rosparam command="load" file="$(find mixed_reality)/launch/params.yaml" />
     <param name="mapping" value="$(arg mapping)" />
