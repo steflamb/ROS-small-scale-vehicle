@@ -10,6 +10,7 @@ import time
 
 
 THRESHOLD = rospy.get_param("obstacle_distance_threshold")
+map_name = rospy.get_param("map_name")
 
 simulator_pose = [0.0,0.0,0.0]
 current_waypoint_index = 0
@@ -48,20 +49,19 @@ def obstacleAvoidance_node():
     global current_lane
 
     #Load lane data from JSON map file
-    f = open("closed_road_shape.json", "r")
+    f = open(map_name, "r")
     map_data = json.loads(f.read())
     f.close()
     #TODOSTE:
     reverse=True
     if reverse:
-        sim_waypoint_list_left =  map_data["right_lane"].reverse()
-        sim_waypoint_list_right = map_data["left_lane"].reverse()
-        sim_waypoint_list_center = map_data["sim_waypoint_list"].reverse()
+        sim_waypoint_list_left =  map_data["right_lane"][::-1]
+        sim_waypoint_list_right = map_data["left_lane"][::-1]
+        sim_waypoint_list_center = map_data["sim_waypoint_list"][::-1]
     else:
         sim_waypoint_list_left =  map_data["left_lane"]
         sim_waypoint_list_right = map_data["right_lane"]
         sim_waypoint_list_center = map_data["sim_waypoint_list"]
-
 
 
     rospy.init_node("obstacleAvoidance_node.py", anonymous=True)
@@ -81,10 +81,12 @@ def obstacleAvoidance_node():
             # Slice waypoints based on current waypoint index
             current_index = current_waypoint_index   #TODO: careful with current_waypoint_index being uninitialized in case there are no waypoints yet
             left_waypoints = sim_waypoint_list_left
+            # print(left_waypoints)
             right_waypoints = sim_waypoint_list_right
 
             # Find closest lane
             for lane, waypoints in [("left", left_waypoints), ("right", right_waypoints)]:
+                # print(waypoints)
                 for waypoint in waypoints:
                     distance = math.sqrt((obstacles[obstacle][0] - waypoint[0]) ** 2 + (obstacles[obstacle][1] - waypoint[1]) ** 2)
                     if distance < min_distance:
