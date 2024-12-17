@@ -277,8 +277,8 @@ def new_obstacles(msg):
                 "angle2" : obstacle.roll.__str__(),
                 "angle3" : obstacle.yaw.__str__() }  
         if simulator_client: 
-            # simulator_client.queue_message(sim_msg)
-            simulator_client.msg_handler.send_obstacle(sim_msg)
+            simulator_client.queue_message(sim_msg)
+            # simulator_client.msg_handler.send_obstacle(sim_msg)
             # time.sleep(0.1)
 
 

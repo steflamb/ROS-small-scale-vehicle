@@ -1,4 +1,4 @@
-map_name: "road_totest.json"
+map_name: "road_totest3.json"
 
 video_source : 'http://team10.local:8890/video'
 driving_websocket : "ws://team10.local:8887/wsDrive"
@@ -22,7 +22,7 @@ model_path : "models/sim_model_rand_augmented2.h5"
 fixed_throttle : True
 
 initial_lane : "left"
-obstacle_distance_threshold : 8
+obstacle_distance_threshold : 10
 
 default_target_speed : 0.4
 
