@@ -62,6 +62,8 @@ sim_image_for_model=None
 
 collision=None
 
+going = False
+
 simulated_speed=0.0
 
 tracked_pose_sim=[1.,0.,1.]
@@ -308,6 +310,7 @@ def new_throttle_steering(msg):
     global steering
     global simulator_client
     global throttle_multiplier
+    global going
 
     #throttle = msg.throttle*throttle_multiplier
     throttle = msg.throttle
@@ -333,11 +336,19 @@ def new_throttle_steering(msg):
         message = { 'msg_type' : 'control', 'steering': steering.__str__(), 'throttle':'0.0', 'brake': '1.0' }
     else:
         message = { 'msg_type' : 'control', 'steering': steering.__str__(), 'throttle':adjusted_throttle.__str__(), 'brake': '0.0' }     
-    simulator_client.queue_message(message)
+    
+    if going:
+        simulator_client.queue_message(message)
+    else:
+        print("going is set to false, not sending actuation commands")
 
 def new_multiplier(msg):
     global throttle_multiplier
     throttle_multiplier = msg.data
+
+def new_going(msg):
+    global going
+    going = msg.data
 
 
 
@@ -384,11 +395,13 @@ def simulator_node():
     rospy.Subscriber('donkey/pose', PoseStamped, new_pose)
     rospy.Subscriber("control/throttle_steering", Control, new_throttle_steering)
     rospy.Subscriber("reset", Bool, new_reset)
+    rospy.Subscriber("obstacles", Obstacles, new_obstacles)
+    rospy.Subscriber("/going", Bool, new_going)
     if MAPPING:
         rospy.Subscriber("throttle/multiplier", Float64, new_multiplier)
     else:
         rospy.Subscriber("throttle_sim/multiplier", Float64, new_multiplier)
-    rospy.Subscriber("obstacles", Obstacles, new_obstacles)
+    
     pub_simulator_pose = None
     pub_simulator_cte = None
     pub_sim_image = None

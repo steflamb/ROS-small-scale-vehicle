@@ -4,7 +4,7 @@
 import asyncio
 import rospy
 from mixed_reality.msg import Control
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Bool
 import websockets
 import json
 import time
@@ -22,8 +22,6 @@ brake = False
 reverse = False
 going = False
 
-CHECKDONE = False
-
 def new_throttle_steering(msg):
     global throttle
     global steering
@@ -34,7 +32,6 @@ def new_throttle_steering(msg):
     throttle = msg.throttle
     steering = msg.steering
 
-    #throttle*=throttle_multiplier
     if abs(steering)>1:
         steering = 0.99 if steering>0 else -0.99
     stopping = msg.stopping
@@ -100,7 +97,7 @@ async def car_node():
     rospy.init_node("car_node",anonymous=True)
     rospy.Subscriber("control/throttle_steering", Control, new_throttle_steering)
     rospy.Subscriber("throttle/multiplier", Float64, new_multiplier)
-    # rospy.Subscriber("/going", Bool, new_going)
+    rospy.Subscriber("/going", Bool, new_going)
     rate = rospy.Rate(20)   #Rate is set to 20Hz because the car reports running at 20Hz
 
     global websocket
@@ -113,21 +110,18 @@ async def car_node():
                 print("connection established succesfully!")
 
                 while not rospy.is_shutdown():
-                    # if going:
-                    await send_commands(websocket)
-                    print(f"throttle {throttle}\nsteering: {steering}\nmultiplier {throttle_multiplier}")
+                    if going:
+                        await send_commands(websocket)
+                        print(f"throttle {throttle}\nsteering: {steering}\nmultiplier {throttle_multiplier}")
+                    else:
+                        print("Going is set to false")
+                        command = {
+                            "throttle": 0.0,
+                            "angle": 0.0
+                        }
+                        message = json.dumps(command)
+                        await websocket.send(message)
                     rate.sleep()
-                    """
-                    command = {
-                        "throttle": throttle,
-                        "angle": steering
-                    }
-                    message = json.dumps(command)
-                    print(message)
-                    print(f"multiplier {throttle_multiplier}")
-                    await websocket.send(message)
-                    rate.sleep()
-                    """
 
                 print("Rospy shutdown, stopping car")
                 command = {
@@ -151,16 +145,6 @@ async def car_node():
 
         
 
-    
-        
-
-
-    
-        
-
-
-
-    
 
 
 

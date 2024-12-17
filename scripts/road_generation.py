@@ -231,7 +231,7 @@ left_margin, right_margin = road_generation.generate_road_margins(sim_waypoint_l
 #Generate obstacles
 obstacles = []
 # #obstacles for guericke
-# obstacles.append(["Barrel",39.174046199856555,62.74676445135568,0,0,-30,0])
+obstacles.append(["Barrel",39.174046199856555,62.74676445135568,0,0,-30,0])
 # obstacles.append(["cone",42.07875468798453,46.95302574990553,0,0,-90,0])
 # #obstacles for guericke straight
 # obstacles.append(["Barrel",46,64.74676445135568,0,0,-30,0])
@@ -252,7 +252,7 @@ map = {
     "obstacles": obstacles
 }
 
-with open("guericke.json", "w") as f:
+with open("crash test.json", "w") as f:
     f.write(json.dumps(map))
 
 print(os.getcwd())

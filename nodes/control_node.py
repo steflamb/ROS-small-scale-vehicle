@@ -61,36 +61,35 @@ def new_collision(msg):
     global collision
     collision = msg.data
 
-def new_going(msg):
-    global going
-    global state
-    global brake
-    global pub_throttle_steering
-    if going and msg.data:
-        print(f"CONTROL: State is already driving")
-    elif not going and not msg.data:
-        print(f"CONTROL: State is already {state}")
-        if pub_throttle_steering is None:
-            pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control, queue_size=10)
-        pub_throttle_steering.publish(Control(0, steering, True, False, True))
-        state = "stopping"
-    elif msg.data:
-        state = "driving"
-        going = True
-        brake = False
-    else:
-        state = "stopping"
-        going = False
-        if pub_throttle_steering is None:
-            pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control, queue_size=10)
-        pub_throttle_steering.publish(Control(0, steering, True, False, True))
+# def new_going(msg):
+#     global going
+#     global state
+#     global brake
+#     global pub_throttle_steering
+#     if going and msg.data:
+#         print(f"CONTROL: State is already driving")
+#     elif not going and not msg.data:
+#         print(f"CONTROL: State is already {state}")
+#         if pub_throttle_steering is None:
+#             pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control, queue_size=10)
+#         pub_throttle_steering.publish(Control(0, steering, True, False, True))
+#         state = "stopping"
+#     elif msg.data:
+#         state = "driving"
+#         going = True
+#         brake = False
+#     else:
+#         state = "stopping"
+#         going = False
+#         if pub_throttle_steering is None:
+#             pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control, queue_size=10)
+#         pub_throttle_steering.publish(Control(0, steering, True, False, True))
     
 def new_waypoints(msg):
     global waypoint_list
     global current_waypoint_index
     global following_waypoints
     global state
-    global going
     waypoint_list = list(map(lambda wp:[wp.x, wp.y],msg.waypoints))
     if msg.reset: current_waypoint_index = 0
     if len(waypoint_list)==0:
@@ -99,7 +98,6 @@ def new_waypoints(msg):
     else:
         following_waypoints = True
         state = "driving"
-        going = True
     print(f"Received waypoint list of length {len(waypoint_list)}\nCurrent waypoint index is {current_waypoint_index}")
 
 # def new_sim_pose(msg):
@@ -159,7 +157,6 @@ def control_node():
     global brake
     global collision
     global state
-    global going
     global current_waypoint_index
     global waypoint_list
     global pub_throttle_steering
@@ -171,7 +168,6 @@ def control_node():
     rospy.init_node("control_node", anonymous=True)
     rospy.Subscriber("model/throttle_steering", Control, new_throttle_steering)
     rospy.Subscriber("collision", String, new_collision)
-    rospy.Subscriber("going", Bool, new_going)
     rospy.Subscriber("waypoints", WaypointList, new_waypoints)
     #rospy.Subscriber("sim/pose", PoseStamped, new_sim_pose)
     if MAPPING:
@@ -182,6 +178,7 @@ def control_node():
     if pub_throttle_steering is None:
         pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control, queue_size=10)
     pub_current_waypoint_index = rospy.Publisher("control/current_waypoint_index", Int64, queue_size=10)
+    pub_going = rospy.Publisher("/going", Bool, queue_size=10)
     #TODO: check if this rate is fine
     rate = rospy.Rate(50)
 
@@ -192,10 +189,10 @@ def control_node():
             if collision!="none" and state!="stopped":
                 print("COLLISION!", collision)
                 state = "stopping"
-                going = False
+                pub_going.publish(False)
                 break
 
-            if following_waypoints and going:
+            if following_waypoints:
                 #recalculate commands to next waypoint
                 current_waypoint = waypoint_list[current_waypoint_index]
                 # print("Going to: ", current_waypoint)
@@ -226,8 +223,7 @@ def control_node():
                             print("reached final waypoint, looping")
                             current_waypoint_index = 0
                         else:
-                            if going:
-                                print("Reached final waypoint")
+                            print("Reached final waypoint")
                             state = "stopping"
                             following_waypoints = False
 
@@ -238,19 +234,16 @@ def control_node():
             if brake:
                 #send brake command
                 if state=="driving":
-                    pub_throttle_steering.publish(Control(-throttle, steering, True, False, not going))
+                    pub_throttle_steering.publish(Control(-throttle, steering, True, False, False))
             else:
                 #send commands
                 if state=="stopping":
                     state = "stopped"
-                    going = False
                     pub_throttle_steering.publish(Control(-throttle, steering, True, False, True))
                 elif state=="stopped":
-                    going = False
                     pub_throttle_steering.publish(Control(0, steering, True, False, True))
                 else:
-                    # print(f"Going to {current_waypoint} from {sim_pose}")
-                    pub_throttle_steering.publish(Control(throttle, steering, False, throttle<0, not going))
+                    pub_throttle_steering.publish(Control(throttle, steering, False, throttle<0, False))
 
             rate.sleep()
         except Exception as e:
