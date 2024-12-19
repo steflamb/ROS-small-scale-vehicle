@@ -43,6 +43,7 @@ def lidar_depth_node():
     matrix_id = None
     image_id = None
 
+    matrix_saved = False
 
     line_number = 1
     for line in r.iter_lines(decode_unicode=None):
@@ -78,7 +79,9 @@ def lidar_depth_node():
 
                     
                     try:
-                        intrinsic_matrix = np.frombuffer(matrix_bytes)
+                        if not matrix_saved:    #FOR ONLY USING THE FIRST MATRIX
+                            intrinsic_matrix = np.frombuffer(matrix_bytes)
+                            matrix_saved = True
                         # print(intrinsic_matrix)
                     except Exception as e:
                         print("\n\nSOMETHING WENT WRONG PROCESSING THE MATRIX")
@@ -98,13 +101,15 @@ def lidar_depth_node():
                         # print("processing image")
                         f = BytesIO(image_bytes)
                         pil_img = PILImage.open(f)
-                        cv2_img = np.rot90(np.array(pil_img))
+                        # cv2_img = np.rot90(np.array(pil_img))
+                        cv2_img = np.array(pil_img)
                         # print(cv2_img.shape)
 
                         image_message = bridge.cv2_to_imgmsg(cv2_img, encoding="mono8")
                         pub_img.publish(image_message)
 
                         depth_map = (cv2_img.flatten()/255)*10
+                        # depth_map = (cv2_img.flatten()/255)/10
                         lidar_data = Float64MultiArray()
                         lidar_data.data = np.concatenate((intrinsic_matrix, depth_map))
                         pub_lidar_data.publish(lidar_data)
