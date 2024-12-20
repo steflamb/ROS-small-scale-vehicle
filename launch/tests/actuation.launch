@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="sim_only" default="false"/>
+    <arg name="vicon" default="true" />
+    <arg name="mapping" default="true" />
+    <arg name="tracking" default="true" />
+
+    <rosparam command="load" file="$(find mixed_reality)/launch/params.yaml" />
+    <group if="$(arg sim_only)">
+        <param name="mapping" value="false" />
+        <param name="tracking" value="true" />
+    </group>  
+    <param name="mapping" value="$(arg mapping)" />
+    <param name="tracking" value="$(arg tracking)" />
+    
+  
+
+    <node name="sim_node" pkg="mixed_reality" type="simulator_node_V2.py" cwd="node" required="true"/>
+
+    <group unless="$(arg sim_only)">
+        <node name="car_node" pkg="mixed_reality" type="car_node.py" cwd="node"/>
+        <node if="$(arg vicon)" name="tracking_node" pkg="mixed_reality" type="vicon_tracking.py" cwd="node"/>
+        <node unless="$(arg vicon)" name="tracking_node" pkg="mixed_reality" type="tracking_with_phone.py" cwd="node"/>
+    </group>
+</launch>

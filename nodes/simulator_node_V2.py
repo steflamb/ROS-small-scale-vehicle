@@ -305,12 +305,15 @@ def new_reset(msg):
 
 
 def new_throttle_steering(msg):
+    global going
+    if not going: return
+
     #TODO: change behaviour if youre braking to stop
     global throttle
     global steering
     global simulator_client
     global throttle_multiplier
-    global going
+    
 
     #throttle = msg.throttle*throttle_multiplier
     throttle = msg.throttle
@@ -337,10 +340,7 @@ def new_throttle_steering(msg):
     else:
         message = { 'msg_type' : 'control', 'steering': steering.__str__(), 'throttle':adjusted_throttle.__str__(), 'brake': '0.0' }     
     
-    if going:
-        simulator_client.queue_message(message)
-    else:
-        print("going is set to false, not sending actuation commands")
+    simulator_client.queue_message(message)
 
 def new_multiplier(msg):
     global throttle_multiplier
@@ -349,6 +349,8 @@ def new_multiplier(msg):
 def new_going(msg):
     global going
     going = msg.data
+    print(msg.data)
+    print(f"received new going command: {going}")
 
 
 

@@ -105,6 +105,7 @@ def keyboard_node():
             else:
                 print("There was an error parsing the waypoint\nExample usage: 'w: 1.0, 0.8'")
         elif "demo" in message:
+            print(f"following map with name {map_name}")
             f = open(map_name, "r")
             map_data = json.loads(f.read())
             f.close()
@@ -132,8 +133,11 @@ def keyboard_node():
             wp_list = list(map(lambda pair:Waypoint(pair[0], pair[1]), wp))
             if reverse:
                 wp_list.reverse()
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_waypoint.publish(True,wp_list)
             pub_current_lane.publish(lane)
+            print("waypoints published")
         elif "forward" in message:
             #forward 0.39 1
             print("starting forward difference experiment")
@@ -149,6 +153,8 @@ def keyboard_node():
             # print(command)
             # os.system(command)
             # time.sleep(0.5)
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
             pub_throttle_multiplier.publish(1)
             sim_mult = rospy.Publisher("throttle_sim/multiplier", Float64, queue_size=10)
@@ -168,6 +174,8 @@ def keyboard_node():
             # duration = 6
             
             print(f"applying steering {steering} an throttle {throttle} fro {duration} seconds")
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
             pub_throttle_multiplier.publish(1)
             sim_mult = rospy.Publisher("throttle_sim/multiplier", Float64, queue_size=10)
@@ -185,6 +193,8 @@ def keyboard_node():
             target = 1
             rospy.Subscriber("donkey/speed", Float64, new_speed)
             print(f"applying throttle {throttle} until speed is {target}")
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
             while target-speed>0.1:
                 pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
@@ -195,6 +205,8 @@ def keyboard_node():
         elif "pid" in message:
             steering = -0.6
             throttle = 1
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
             time_block = 10
             target = 0.4
@@ -233,6 +245,8 @@ def keyboard_node():
             print("going to waypoint 15 sim units in front")
             wp = Waypoint(sim_pose[0]+15,sim_pose[1])
             wp_list = [wp]
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_waypoint.publish(True,wp_list)
         elif "close" in message:
             #get sim pose
@@ -243,6 +257,8 @@ def keyboard_node():
             print("going to waypoint 10 sim units in front, 5 to the left")
             wp = Waypoint(sim_pose[0]+10,sim_pose[1]+5)
             wp_list = [wp]
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_waypoint.publish(True,wp_list)
         elif "far" in message:
             #get sim pose
@@ -253,6 +269,8 @@ def keyboard_node():
             print("going to waypoint 20 sim units in front, 5 to the right")
             wp = Waypoint(sim_pose[0]+20,sim_pose[1]-5)
             wp_list = [wp]
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_waypoint.publish(True,wp_list)
 
         elif "sharp" in message:
@@ -266,6 +284,8 @@ def keyboard_node():
                        Waypoint(sim_pose[0]+20,sim_pose[1]),
                        Waypoint(sim_pose[0]+20,sim_pose[1]+10)
                        ]
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_waypoint.publish(True,wp_list)
 
         elif "curve" in message:
@@ -279,6 +299,8 @@ def keyboard_node():
                        Waypoint(sim_pose[0]+14,sim_pose[1]+8),
                        Waypoint(sim_pose[0]+20,sim_pose[1]+10)
                        ]
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_waypoint.publish(True,wp_list)
 
         elif "stest" in message:
@@ -295,6 +317,8 @@ def keyboard_node():
                        Waypoint(sim_pose[0]+18,sim_pose[1]-4),
                        Waypoint(sim_pose[0]+24,sim_pose[1]-8),
                        Waypoint(sim_pose[0]+27,sim_pose[1]+2)]
+            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
+            pub_going.publish(True)
             pub_waypoint.publish(True,wp_list)
             
 
