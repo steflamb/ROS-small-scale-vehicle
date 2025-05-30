@@ -1,3 +1,5 @@
+Replication package
+
 # ROS-small-scale-vehicle
 
 Launchfile descriptions (found in launch/, see their implementations for more details):
