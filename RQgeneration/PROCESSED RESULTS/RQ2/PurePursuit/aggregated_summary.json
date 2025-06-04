@@ -1,0 +1,294 @@
+{
+  "aggregated_summary": {
+    "straight": {
+      "dist_real": {
+        "mean": 0.0469060478638339,
+        "std": 0.013979077664160327
+      },
+      "dist_mapped": {
+        "mean": 0.04647088755818892,
+        "std": 0.014454412919960278
+      },
+      "dist_sim": {
+        "mean": 0.054310869484777625,
+        "std": 0.0034973209617270764
+      },
+      "traj_diff_sim_vs_real": {
+        "mean": 0.07193757515442653,
+        "std": 0.044967233827619975
+      },
+      "traj_diff_mapped_vs_real": {
+        "mean": 0.008449370231524438,
+        "std": 0.0026724168137992484
+      },
+      "traj_std_sim_vs_real": {
+        "mean": 0.044967233827619975,
+        "std": 0.0
+      },
+      "traj_std_mapped_vs_real": {
+        "mean": 0.0026724168137992484,
+        "std": 0.0
+      },
+      "cumulative_real": {
+        "mean": 0.03068356592720626,
+        "std": 0.02549480065384297
+      },
+      "cumulative_mapped": {
+        "mean": 0.032359974822715507,
+        "std": 0.023254791066406273
+      },
+      "cumulative_sim": {
+        "mean": 0.0016318268247181046,
+        "std": 0.0005196014770125912
+      }
+    },
+    "close": {
+      "dist_real": {
+        "mean": 0.047178495259926505,
+        "std": 0.014720452459656485
+      },
+      "dist_mapped": {
+        "mean": 0.04723140791038457,
+        "std": 0.014651511587545156
+      },
+      "dist_sim": {
+        "mean": 0.0514367245039976,
+        "std": 0.00551964198442308
+      },
+      "traj_diff_sim_vs_real": {
+        "mean": 0.08634361715367955,
+        "std": 0.030591203771934507
+      },
+      "traj_diff_mapped_vs_real": {
+        "mean": 0.008211113050541018,
+        "std": 0.0008989775474999047
+      },
+      "traj_std_sim_vs_real": {
+        "mean": 0.030591203771934507,
+        "std": 0.0
+      },
+      "traj_std_mapped_vs_real": {
+        "mean": 0.0008989775474999047,
+        "std": 0.0
+      },
+      "cumulative_real": {
+        "mean": 0.017393853372127382,
+        "std": 0.012579383048157993
+      },
+      "cumulative_mapped": {
+        "mean": 0.017667380356229674,
+        "std": 0.012632715456659291
+      },
+      "cumulative_sim": {
+        "mean": 0.044861678757998694,
+        "std": 0.005729828484370339
+      }
+    },
+    "far": {
+      "dist_real": {
+        "mean": 0.07369378289781565,
+        "std": 0.06762842519635327
+      },
+      "dist_mapped": {
+        "mean": 0.07374901433326866,
+        "std": 0.06775926138751472
+      },
+      "dist_sim": {
+        "mean": 0.1746962806038904,
+        "std": 0.061392917919215785
+      },
+      "traj_diff_sim_vs_real": {
+        "mean": 0.11456075400018717,
+        "std": 0.04845283001370504
+      },
+      "traj_diff_mapped_vs_real": {
+        "mean": 0.009996940870725158,
+        "std": 0.004357552875436311
+      },
+      "traj_std_sim_vs_real": {
+        "mean": 0.04845283001370504,
+        "std": 0.0
+      },
+      "traj_std_mapped_vs_real": {
+        "mean": 0.004357552875436311,
+        "std": 0.0
+      },
+      "cumulative_real": {
+        "mean": 0.005963898441962415,
+        "std": 0.003706430951517701
+      },
+      "cumulative_mapped": {
+        "mean": 0.006776001129269576,
+        "std": 0.0032716744659096767
+      },
+      "cumulative_sim": {
+        "mean": 0.002049645113029817,
+        "std": 0.0014125948883221002
+      }
+    },
+    "sharp": {
+      "dist_real": {
+        "mean": 0.13307449679814667,
+        "std": 0.02603706459087774
+      },
+      "dist_mapped": {
+        "mean": 0.13341659583651677,
+        "std": 0.025797526050537596
+      },
+      "dist_sim": {
+        "mean": 0.1652441436183787,
+        "std": 0.00637654078644939
+      },
+      "traj_diff_sim_vs_real": {
+        "mean": 0.38488130128950293,
+        "std": 0.02472596603640728
+      },
+      "traj_diff_mapped_vs_real": {
+        "mean": 0.011800514968236638,
+        "std": 0.005435614773089799
+      },
+      "traj_std_sim_vs_real": {
+        "mean": 0.02472596603640728,
+        "std": 0.0
+      },
+      "traj_std_mapped_vs_real": {
+        "mean": 0.005435614773089799,
+        "std": 0.0
+      },
+      "cumulative_real": {
+        "mean": 0.1757883420257772,
+        "std": 0.028126659419046324
+      },
+      "cumulative_mapped": {
+        "mean": 0.17933062414969775,
+        "std": 0.03010866892017519
+      },
+      "cumulative_sim": {
+        "mean": 0.10071253785710763,
+        "std": 0.0037130431932873025
+      }
+    },
+    "curve": {
+      "dist_real": {
+        "mean": 0.07199453338814281,
+        "std": 0.04625918245621813
+      },
+      "dist_mapped": {
+        "mean": 0.0719947833103438,
+        "std": 0.0462591918737271
+      },
+      "dist_sim": {
+        "mean": 0.203120576144357,
+        "std": 0.013006989932414757
+      },
+      "traj_diff_sim_vs_real": {
+        "mean": 0.1370463230816094,
+        "std": 0.0543190548080302
+      },
+      "traj_diff_mapped_vs_real": {
+        "mean": 0.01168000321901641,
+        "std": 0.003739590131636961
+      },
+      "traj_std_sim_vs_real": {
+        "mean": 0.0543190548080302,
+        "std": 0.0
+      },
+      "traj_std_mapped_vs_real": {
+        "mean": 0.003739590131636961,
+        "std": 0.0
+      },
+      "cumulative_real": {
+        "mean": 0.09354224172419721,
+        "std": 0.007854419831927101
+      },
+      "cumulative_mapped": {
+        "mean": 0.09713163060830524,
+        "std": 0.008537790707446643
+      },
+      "cumulative_sim": {
+        "mean": 0.18290309099483718,
+        "std": 0.0032163821601103723
+      }
+    },
+    "stest": {
+      "dist_real": {
+        "mean": 0.10281325664841183,
+        "std": 0.04625037047672305
+      },
+      "dist_mapped": {
+        "mean": 0.10274261105683465,
+        "std": 0.04621076591084045
+      },
+      "dist_sim": {
+        "mean": 0.17613907500926462,
+        "std": 0.011927276891777
+      },
+      "traj_diff_sim_vs_real": {
+        "mean": 0.5060135755881713,
+        "std": 0.04445128279588901
+      },
+      "traj_diff_mapped_vs_real": {
+        "mean": 0.014263997526631406,
+        "std": 0.0054026930148848955
+      },
+      "traj_std_sim_vs_real": {
+        "mean": 0.04445128279588901,
+        "std": 0.0
+      },
+      "traj_std_mapped_vs_real": {
+        "mean": 0.0054026930148848955,
+        "std": 0.0
+      },
+      "cumulative_real": {
+        "mean": 0.48252136825107,
+        "std": 0.06668658862058582
+      },
+      "cumulative_mapped": {
+        "mean": 0.4847297532727201,
+        "std": 0.06646283834243392
+      },
+      "cumulative_sim": {
+        "mean": 0.5368397387904287,
+        "std": 0.008802929010383272
+      }
+    }
+  },
+  "trajectory_statistical_significance": {
+    "straight": {
+      "p_value_traj_sim_vs_real": 0.5295663584776393,
+      "d_value_traj_sim_vs_real": -0.028119805438506645,
+      "p_value_traj_mapped_vs_real": 0.9826845153001652,
+      "d_value_traj_mapped_vs_real": 0.0009707291038615465
+    },
+    "close": {
+      "p_value_traj_sim_vs_real": 0.48031821374377237,
+      "d_value_traj_sim_vs_real": 0.031569876182553885,
+      "p_value_traj_mapped_vs_real": 0.9227957022480218,
+      "d_value_traj_mapped_vs_real": -0.004334616318207388
+    },
+    "far": {
+      "p_value_traj_sim_vs_real": 0.7679468951912317,
+      "d_value_traj_sim_vs_real": -0.013197348913565192,
+      "p_value_traj_mapped_vs_real": 0.9930112462963403,
+      "d_value_traj_mapped_vs_real": 0.0003917730617966078
+    },
+    "sharp": {
+      "p_value_traj_sim_vs_real": 0.17785086490932056,
+      "d_value_traj_sim_vs_real": 0.06027903984631565,
+      "p_value_traj_mapped_vs_real": 0.9891809314104614,
+      "d_value_traj_mapped_vs_real": 0.0006065023261067255
+    },
+    "curve": {
+      "p_value_traj_sim_vs_real": 0.1265179832013267,
+      "d_value_traj_sim_vs_real": -0.0683618051367463,
+      "p_value_traj_mapped_vs_real": 0.9697710944241686,
+      "d_value_traj_mapped_vs_real": 0.0016949454122634022
+    },
+    "stest": {
+      "p_value_traj_sim_vs_real": 0.19323943370179003,
+      "d_value_traj_sim_vs_real": 0.058204817801559984,
+      "p_value_traj_mapped_vs_real": 0.9849680069213104,
+      "d_value_traj_mapped_vs_real": -0.0008426972130943857
+    }
+  }
+}

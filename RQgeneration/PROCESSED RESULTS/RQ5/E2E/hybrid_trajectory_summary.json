@@ -1,0 +1,28 @@
+{
+  "fail": {
+    "real": {
+      "cte_mean": 0.10063143256831558,
+      "cte_std": 0.07134091390251274,
+      "obstacle_min_dist": 0.500244662608343,
+      "obstacle_mean_dist": 0.6276356800487447,
+      "offroad_ratio": 0.0,
+      "completion_rate": 0.37
+    },
+    "sim": {
+      "cte_mean": 0.17190871983925476,
+      "cte_std": 0.08655230293999444,
+      "obstacle_min_dist": 0.43831399408843946,
+      "obstacle_mean_dist": 0.6069191610448711,
+      "offroad_ratio": 0.0,
+      "completion_rate": 1.0
+    },
+    "mixed": {
+      "cte_mean": 0.11163647819742205,
+      "cte_std": 0.08044901159625352,
+      "obstacle_min_dist": 0.4326559180753437,
+      "obstacle_mean_dist": 0.6044988672511202,
+      "offroad_ratio": 0.0,
+      "completion_rate": 0.37
+    }
+  }
+}

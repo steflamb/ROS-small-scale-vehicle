@@ -1,0 +1,34 @@
+{
+  "green": {
+    "real": {
+      "cte_mean": 0.12707603033238846,
+      "cte_std": 0.07641746638491737,
+      "obstacle_min_dist": 0.37800953949403476,
+      "obstacle_mean_dist": 0.5278639258989957,
+      "offroad_ratio": 0.0
+    },
+    "sim": {
+      "cte_mean": 0.12483292787517025,
+      "cte_std": 0.08079041342438796,
+      "obstacle_min_dist": 0.37689241669478357,
+      "obstacle_mean_dist": 0.5304162944002383,
+      "offroad_ratio": 0.0
+    }
+  },
+  "red": {
+    "real": {
+      "cte_mean": 0.08782120047080015,
+      "cte_std": 0.072921368852867,
+      "obstacle_min_dist": 0.5508441762169711,
+      "obstacle_mean_dist": 0.639710834076499,
+      "offroad_ratio": 0.0
+    },
+    "sim": {
+      "cte_mean": 0.08522023176678081,
+      "cte_std": 0.07509123977285101,
+      "obstacle_min_dist": 0.5556723740063838,
+      "obstacle_mean_dist": 0.6410352114795715,
+      "offroad_ratio": 0.0
+    }
+  }
+}

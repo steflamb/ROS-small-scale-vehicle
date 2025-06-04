@@ -1,0 +1,86 @@
+{
+  "green": {
+    "real": {
+      "cte_mean": 0.16353678983103198,
+      "cte_std": 0.0711800000696023,
+      "obstacle_min_dist": 0.1819835661069311,
+      "obstacle_mean_dist": 0.5057708690096988,
+      "offroad_ratio": 0.0,
+      "completion_rate": 1.0
+    },
+    "sim": {
+      "cte_mean": 0.3096942717181184,
+      "cte_std": 0.3082731199113996,
+      "obstacle_min_dist": 0.46089952911989446,
+      "obstacle_mean_dist": 0.6030074123381879,
+      "offroad_ratio": 0.246,
+      "completion_rate": 0.44
+    },
+    "mixed": {
+      "cte_mean": 0.14682664318669686,
+      "cte_std": 0.07085283332378133,
+      "obstacle_min_dist": 0.1718136811854562,
+      "obstacle_mean_dist": 0.5122162356807839,
+      "offroad_ratio": 0.0,
+      "completion_rate": 1.0
+    },
+    "mixed_entire": {
+      "cte_mean": 0.1391795005250584,
+      "cte_std": 0.06337266453122925,
+      "obstacle_min_dist": 0.4762828340120651,
+      "obstacle_mean_dist": 0.6275923947783628,
+      "offroad_ratio": 0.0,
+      "completion_rate": 1.0
+    },
+    "vil": {
+      "cte_mean": 0.13173331121151916,
+      "cte_std": 0.10383897272291968,
+      "obstacle_min_dist": 0.5862522106903988,
+      "obstacle_mean_dist": 0.6524267090331197,
+      "offroad_ratio": 0.014,
+      "completion_rate": 0.43
+    }
+  },
+  "red": {
+    "real": {
+      "cte_mean": 0.16482086117344452,
+      "cte_std": 0.06921103854799111,
+      "obstacle_min_dist": 0.46651737342235167,
+      "obstacle_mean_dist": 0.6227840345534512,
+      "offroad_ratio": 0.0,
+      "completion_rate": 1.0
+    },
+    "sim": {
+      "cte_mean": 0.30974177147262055,
+      "cte_std": 0.3254678935776313,
+      "obstacle_min_dist": 0.5962954847813425,
+      "obstacle_mean_dist": 0.6555001155971277,
+      "offroad_ratio": 0.246,
+      "completion_rate": 0.44
+    },
+    "mixed": {
+      "cte_mean": 0.1565535666126605,
+      "cte_std": 0.06874171561194835,
+      "obstacle_min_dist": 0.47065838359169765,
+      "obstacle_mean_dist": 0.6125780011074373,
+      "offroad_ratio": 0.0,
+      "completion_rate": 1.0
+    },
+    "mixed_entire": {
+      "cte_mean": 0.1537228956565736,
+      "cte_std": 0.0674434794055415,
+      "obstacle_min_dist": 0.3591050772385869,
+      "obstacle_mean_dist": 0.5804281051984901,
+      "offroad_ratio": 0.0,
+      "completion_rate": 1.0
+    },
+    "vil": {
+      "cte_mean": 0.1309965116504616,
+      "cte_std": 0.10352608355966053,
+      "obstacle_min_dist": 0.5180378155575113,
+      "obstacle_mean_dist": 0.6212730950245154,
+      "offroad_ratio": 0.014,
+      "completion_rate": 0.43
+    }
+  }
+}

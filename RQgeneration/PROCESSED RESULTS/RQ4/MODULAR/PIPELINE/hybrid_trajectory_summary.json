@@ -1,0 +1,70 @@
+{
+  "green": {
+    "real": {
+      "cte_mean": 0.12815609425866584,
+      "cte_std": 0.11971133674737777,
+      "obstacle_min_dist": 0.462357682553481,
+      "obstacle_mean_dist": 0.6461666375042997,
+      "offroad_ratio": 0.0,
+      "completion_rate": 0.62
+    },
+    "sim": {
+      "cte_mean": 0.07723258883376925,
+      "cte_std": 0.08506659076464182,
+      "obstacle_min_dist": 0.4216107784155762,
+      "obstacle_mean_dist": 0.5832404881401155,
+      "offroad_ratio": 0.0,
+      "completion_rate": 1.0
+    },
+    "mixed": {
+      "cte_mean": 0.1167653483277013,
+      "cte_std": 0.07999196025802928,
+      "obstacle_min_dist": 0.40642948768182363,
+      "obstacle_mean_dist": 0.5721730464606887,
+      "offroad_ratio": 0.01,
+      "completion_rate": 0.75
+    },
+    "vil": {
+      "cte_mean": 0.1255227101363193,
+      "cte_std": 0.14932741291865465,
+      "obstacle_min_dist": 0.4436889798958545,
+      "obstacle_mean_dist": 0.581804083418395,
+      "offroad_ratio": 0.076,
+      "completion_rate": 0.93
+    }
+  },
+  "red": {
+    "real": {
+      "cte_mean": 0.14065467414442656,
+      "cte_std": 0.13724769401174977,
+      "obstacle_min_dist": 0.3235747847469283,
+      "obstacle_mean_dist": 0.5891780136867386,
+      "offroad_ratio": 0.02,
+      "completion_rate": 0.62
+    },
+    "sim": {
+      "cte_mean": 0.0660124250906565,
+      "cte_std": 0.06442843425638149,
+      "obstacle_min_dist": 0.29853973847691295,
+      "obstacle_mean_dist": 0.5692455819624684,
+      "offroad_ratio": 0.0,
+      "completion_rate": 1.0
+    },
+    "mixed": {
+      "cte_mean": 0.10569533299190918,
+      "cte_std": 0.08174493371375888,
+      "obstacle_min_dist": 0.2913091994119672,
+      "obstacle_mean_dist": 0.5139313341935611,
+      "offroad_ratio": 0.01,
+      "completion_rate": 0.75
+    },
+    "vil": {
+      "cte_mean": 0.13155607425634572,
+      "cte_std": 0.1513807816435892,
+      "obstacle_min_dist": 0.30684411828676894,
+      "obstacle_mean_dist": 0.5456902666575408,
+      "offroad_ratio": 0.076,
+      "completion_rate": 0.93
+    }
+  }
+}
