@@ -1,4 +1,5 @@
-# ROS-small-scale-vehicle
+# Replication of A Multi-Modality
+Evaluation of the Reality Gap in Autonomous Driving Systems
 
 This repository contains the replication package of "A Multi-Modality
 Evaluation of the Reality Gap in Autonomous Driving Systems"
