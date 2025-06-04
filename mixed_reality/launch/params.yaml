@@ -23,7 +23,7 @@ model_path : "models/ft_model.h5"
 
 fixed_throttle : True
 
-initial_lane : "left"
+initial_lane : "center"
 obstacle_distance_threshold : 9
 
 default_target_speed : 0.4

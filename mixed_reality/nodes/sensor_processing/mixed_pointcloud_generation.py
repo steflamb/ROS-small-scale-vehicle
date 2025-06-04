@@ -204,7 +204,7 @@ def pointcloud_node():
     global depth_image
     print("Starting point cloud node")
 
-    rospy.init_node("pointcloud_node", anonymous=True)
+    rospy.init_node("mixed_pointcloud_generation", anonymous=True)
     if READ_AS_IMAGE:
         rospy.Subscriber("/mixed_depth_image", Image, new_image)
     else:

@@ -18,7 +18,7 @@ def lidar_camera_node():
     print("Lidar video source successfully opened")
     
 
-    rospy.init_node("lidar_camera_node", anonymous=True)
+    rospy.init_node("tof_interface", anonymous=True)
     pub_camera = None
     bridge = CvBridge()
 

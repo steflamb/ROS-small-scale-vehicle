@@ -39,7 +39,7 @@ def mixer_node():
     global real_image
     print("Starting image mixing node")
 
-    rospy.init_node("mixer_node", anonymous=True)
+    rospy.init_node("camera_mixing", anonymous=True)
     rospy.Subscriber("camera", SensorImage, new_camera_image)
     rospy.Subscriber("sim/image_obs", SensorImage, new_simulator_image)
     # image_obs

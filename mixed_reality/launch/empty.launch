@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
 <launch>
-    <arg name="mapping" default="false" />
-    <arg name="tracking" default="false" />
+    <arg name="mapping" default="true" />
+    <arg name="tracking" default="true" />
 
     <arg name="real" default="false" />
     <arg name="mixed" default="true" />

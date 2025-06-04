@@ -93,7 +93,7 @@ def new_image(msg):
 
 
 
-def model_node():
+def e2e_model():
     print("Starting model node")
     global MODEL_PATH
     global model
@@ -111,21 +111,19 @@ def model_node():
 
     print("MODEL COMPILED")
 
-    rospy.init_node("model_node", anonymous=True)
+    rospy.init_node("e2e_model", anonymous=True)
 
-    # if rospy.get_param("sim"):
-    #     rospy.Subscriber("sim/image", SensorImage, new_image)
-    # elif rospy.get_param("mixed"):
-    #     rospy.Subscriber("mixed_image", SensorImage, new_image)
-    # else:
-        # rospy.Subscriber("camera", SensorImage, new_image)
+    if rospy.get_param("sim"):
+        rospy.Subscriber("sim/image", SensorImage, new_image)
+    elif rospy.get_param("mixed"):
+        rospy.Subscriber("mixed_image", SensorImage, new_image)
+    else:
+        rospy.Subscriber("camera", SensorImage, new_image)
 
 
-
-    #TODO TOPIC 2.1 Choose camera input
 
     # SIM CAMERA OPTION
-    rospy.Subscriber("sim/image", SensorImage, new_image)
+    # rospy.Subscriber("sim/image", SensorImage, new_image)
 
     # REAL CAMERA OPTION
     # rospy.Subscriber("camera", SensorImage, new_image)
@@ -146,6 +144,6 @@ def model_node():
 
 if __name__ == '__main__':
     try:
-        model_node()
+        e2e_model()
     except rospy.ROSInterruptException:
             pass

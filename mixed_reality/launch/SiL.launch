@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="mapping" default="true" />
+    <arg name="tracking" default="false" />
+
+    <arg name="real" default="false" />
+    <arg name="mixed" default="false" />
+    <arg name="sim" default="true" />
+
+    <rosparam command="load" file="$(find mixed_reality)/launch/params.yaml" />
+    <param name="mapping" value="$(arg mapping)" />
+    <param name="tracking" value="$(arg tracking)" />
+    <param name="real" value="$(arg real)" />
+    <param name="mixed" value="$(arg mixed)" />
+    <param name="sim" value="$(arg sim)" />
+
+    <node pkg="mixed_reality"
+      type="simulator_inteface.py"
+      name="simulator_interface"
+      output="screen"
+      cwd="node" />
+
+    <node pkg="mixed_reality"
+      type="tracking_interface.py"
+      name="tracking_interface"
+      output="screen"
+      cwd="node" />
+
+    <node pkg="mixed_reality"
+      type="control.py"
+      name="control"
+      output="screen"
+      cwd="node" />
+</launch>

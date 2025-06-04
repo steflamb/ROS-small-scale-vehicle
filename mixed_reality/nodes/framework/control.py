@@ -169,7 +169,7 @@ def control_node():
     global MAPPING
     global REPEAT
     
-    rospy.init_node("control_node", anonymous=True)
+    rospy.init_node("control", anonymous=True)
     rospy.Subscriber("model/throttle_steering", Control, new_throttle_steering)
     rospy.Subscriber("collision", String, new_collision)
     rospy.Subscriber("waypoints", WaypointList, new_waypoints)

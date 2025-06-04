@@ -574,10 +574,17 @@ def main_Crusing():
     s0_v = 2.0*7.33 / 3.6  # current speed [m/s]
     s0_a = 0.0
 
-    rospy.init_node("lattice_planner", anonymous=True)
+    rospy.init_node("modular_latticeplanner", anonymous=True)
     print("lattice node initialized")
     pub_waypoints = rospy.Publisher("waypoints", WaypointList, queue_size=10)
-    rospy.Subscriber("obstacles_lidar_sim", Obstacles, new_obstacles)
+
+    if rospy.get_param("sim"):
+        rospy.Subscriber("obstacles_lidar_sim", Obstacles, new_obstacles)
+    else:
+        rospy.Subscriber("obstacles_lidar", Obstacles, new_obstacles)
+    
+
+
     if MAPPING:
         rospy.Subscriber("donkey/pose", PoseStamped, new_pose)
         rospy.Subscriber("donkey/speed", Float64, new_speed)
@@ -863,7 +870,7 @@ def main_Stopping():
     s0_v = 1/5  # current speed [m/s]
     s0_a = 0.0
 
-    rospy.init_node("lattice_planner", anonymous=True)
+    rospy.init_node("modular_latticeplanner", anonymous=True)
     pub_waypoints = rospy.Publisher("waypoints", WaypointList, queue_size=10)
     rospy.Subscriber("donkey/pose", PoseStamped, new_pose)
     rospy.Subscriber("obstacles_lidar_sim", Obstacles, new_obstacles)

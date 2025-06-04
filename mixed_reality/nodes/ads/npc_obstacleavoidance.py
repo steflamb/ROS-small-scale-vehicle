@@ -41,7 +41,7 @@ def get_closest_lane(pos, left_waypoints, right_waypoints):
 def obstacleAvoidance_node():
     global obstacles, current_waypoint_index, simulator_pose
 
-    rospy.init_node("obstacleAvoidance_node", anonymous=True)
+    rospy.init_node("npc_obstacleavoidance", anonymous=True)
 
     # Parameters
     THRESHOLD = rospy.get_param("obstacle_distance_threshold")

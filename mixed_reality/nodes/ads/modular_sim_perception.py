@@ -34,7 +34,7 @@ class pointcloud_processing_node:
     def __init__(self):
         global for_conversions
         # Initialize ROS node
-        rospy.init_node("pointcloud_processor", anonymous=True)
+        rospy.init_node("modular_sim_perception", anonymous=True)
 
         # Parameters
         self.frame_id = rospy.get_param("~frame_id", "lidar")

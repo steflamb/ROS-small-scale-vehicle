@@ -15,11 +15,6 @@ from mixed_reality.utils.for_conversions import For_convertion_utils
 
 help = "\nKEYBOARD COMMANDS:\n'g' \t to start the car\n's' \t to stop the car\n'r' \t to reset the simulator scenario\n'k' \t to kill all nodes't:<speed>' \t to set a target speed\n'w:<x,y>' \t to set a waypoint\n'i' \t to increase throttle\n'd' \t to decrease throttle\n'exit' \t to quit this node\n'help' \t to show this message again\n"
 
-"""
-TODO: brake
-TODO: change lanes
-"""
-
 throttle_multiplier = rospy.get_param("default_throttle_multiplier")
 
 
@@ -49,7 +44,7 @@ def keyboard_node():
     global sim_pose
 
 
-    rospy.init_node("keyboard_node", anonymous=True)
+    rospy.init_node("user_interface", anonymous=True)
     pub_going=rospy.Publisher("/going",Bool,queue_size=10)
     pub_throttle_multiplier = rospy.Publisher("throttle/multiplier", Float64, queue_size=10)
     pub_target_speed = rospy.Publisher("keyboard/speed", Float64, queue_size=10)
@@ -78,6 +73,13 @@ def keyboard_node():
                 throttle_multiplier = 0
             print(f"Decrease command received, throttle multiplier is now {throttle_multiplier}")
             pub_throttle_multiplier.publish(throttle_multiplier)
+        elif "mult:" in message:
+            if(len(message.split("mult:"))>1):
+                throttle_multiplier = float(message.split("mult:")[1])
+                pub_throttle_multiplier.publish(throttle_multiplier)
+                print(f"Setting target multiplier to {throttle_multiplier}")
+            else:
+                print("There was an error parsing the target speed\nExample usage: 't: 0.7'")
         elif message == "r":
             pub_reset.publish(True)
             print("Resetting scenario")
@@ -104,14 +106,14 @@ def keyboard_node():
                 print(f"Going to waypoint {wp}")
             else:
                 print("There was an error parsing the waypoint\nExample usage: 'w: 1.0, 0.8'")
-        elif "demo" in message:
+        elif "NPC" in message:
             print(f"following map with name {map_name}")
             f = open(map_name, "r")
             map_data = json.loads(f.read())
             f.close()
 
             reverse=False
-            lane="center"
+            lane=rospy.get_param("initial_lane")
 
             if reverse and lane=="right":
                 lane_map="left"
@@ -125,11 +127,6 @@ def keyboard_node():
             else:    
                 wp = map_data[f"{lane_map}_lane"]
 
-
-
-
-
-            
             wp_list = list(map(lambda pair:Waypoint(pair[0], pair[1]), wp))
             if reverse:
                 wp_list.reverse()
@@ -147,8 +144,7 @@ def keyboard_node():
             throttle = float(parts[1])
             duration = 3.
             # iter = int(parts[2])
-            
-            
+
             steering = 0
             print(f"applying throttle {throttle} for {duration} seconds")
             # command = "rosbag record -O t"+"%0.2f"%throttle+"_"+str(iter)+" /donkey/pose /sim/euler /donkey/speed /control/throttle_steering /sim/speed /going /reset"
@@ -196,24 +192,6 @@ def keyboard_node():
             pub_throttle_steering.publish(Control(0,steering,False,False,False))
             while time.time()-start <duration+10:
                 pub_throttle_steering.publish(Control(0,steering,False,False,False))
-        elif "braking" in message:
-            global speed
-            print("starting braking behaviour experiment")
-            # parts = message.split(" ")
-            steering = 0
-            throttle = 1
-            target = 1
-            rospy.Subscriber("donkey/speed", Float64, new_speed)
-            print(f"applying throttle {throttle} until speed is {target}")
-            pub_going = rospy.Publisher("/going", Bool, queue_size=10)
-            pub_going.publish(True)
-            pub_throttle_steering = rospy.Publisher("control/throttle_steering", Control,queue_size=10)
-            while target-speed>0.1:
-                pub_throttle_steering.publish(Control(throttle,steering,False,False,False))
-            print("speed reaches, applying brakes")
-            while speed>0.1:
-                pub_throttle_steering.publish(Control(0,steering,True,False,True))
-            print("braking operation is over")
         elif "pid" in message:
             steering = -0.6
             throttle = 1

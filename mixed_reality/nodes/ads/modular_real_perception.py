@@ -34,7 +34,7 @@ class pointcloud_processing_node:
     def __init__(self):
         global for_conversions
         # Initialize ROS node
-        rospy.init_node("pointcloud_processor", anonymous=True)
+        rospy.init_node("modular_real_perception", anonymous=True)
         rate = rospy.Rate(2)
 
         # Parameters
@@ -54,11 +54,13 @@ class pointcloud_processing_node:
         self.min_points_per_cluster= rospy.get_param("~min_points_per_cluster", 100)
 
         self.min_range_filter = rospy.get_param("~min_range_filter", 0.)
-
         # Subscriber
-        self.sub = rospy.Subscriber("/lidar/pointcloud", PointCloud2,
+        if rospy.get_param("mixed"):
+            self.sub = rospy.Subscriber("/lidar/pointcloud_mixed", PointCloud2,
                                     self.pc_callback, queue_size=1)
-
+        else:
+            self.sub = rospy.Subscriber("/lidar/pointcloud", PointCloud2,
+                                    self.pc_callback, queue_size=1)
         # Publishers
         self.pub_noground  = rospy.Publisher("/cloud_noground", PointCloud2, queue_size=1)
         self.pub_clusters  = rospy.Publisher("/cloud_clusters", PointCloud2, queue_size=1)

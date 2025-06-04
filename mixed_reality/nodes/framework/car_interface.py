@@ -93,7 +93,7 @@ async def car_node():
     global going
     print("Starting car node")
 
-    rospy.init_node("car_node",anonymous=True)
+    rospy.init_node("car_interface",anonymous=True)
     rospy.Subscriber("control/throttle_steering", Control, new_throttle_steering)
     rospy.Subscriber("throttle/multiplier", Float64, new_multiplier)
     rospy.Subscriber("/going", Bool, new_going)

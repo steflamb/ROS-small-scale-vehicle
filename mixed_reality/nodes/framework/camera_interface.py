@@ -19,7 +19,7 @@ def camera_node():
     print("Video source successfully opened")
     
 
-    rospy.init_node("camera_node", anonymous=True)
+    rospy.init_node("camera_interface", anonymous=True)
     pub_camera = None
     bridge = CvBridge()
 
