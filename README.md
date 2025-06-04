@@ -16,6 +16,9 @@ _(Submitted for review in ASE)_
 - **`./RQgeneration/`**  
   Python scripts and tools used to process `.bag` files and generate data used to answer the research questions in the study.
 
+- **`./simulator_binary/`**  
+  Unity-based Digital Twin of the small scale vehicle. Aready compiled for usage on Ubuntu systems.
+
 ## Usage
 
 Refer to the `README.md` files inside each subfolder for setup instructions, usage examples, and experiment details.
