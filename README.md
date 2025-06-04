@@ -1,11 +1,23 @@
-# Replication of A Multi-Modality Evaluation of the Reality Gap in Autonomous Driving Systems
+# Replication of "A Multi-Modality Evaluation of the Reality Gap in Autonomous Driving Systems"
 
-This repository contains the replication package of "A Multi-Modality
-Evaluation of the Reality Gap in Autonomous Driving Systems"
+This repository contains the replication package for the paper:
 
-In the main directory the following can be found:
-./mixed_reality : the ROS package created to perform SiL, ViL, MR, and RW testing.
-./ASE_2025_appendix : the additional details, figures, and tables which resulted from our empirical evaluation which were omitted for the sake of brevity from the submitted work.
-./RQgeneration : the scripts used to process raw .bag recordings used to answer the work's RQs.
+**"A Multi-Modality Evaluation of the Reality Gap in Autonomous Driving Systems"**  
+_(Submitted for review in ASE)_
 
-Further details can be found in each subfolder.
+## Repository Structure
+
+- **`./mixed_reality/`**  
+  A ROS package that implements the testbed for Simulation-in-the-Loop (SiL), Vehicle-in-the-Loop (ViL), Mixed-Reality (MR), and Real-World (RW) autonomous driving experiments.
+
+- **`./ASE_2025_appendix.pdf`**  
+  Supplementary material including detailed figures, tables, and experimental data that were omitted from the main paper for brevity.
+
+- **`./RQgeneration/`**  
+  Python scripts and tools used to process `.bag` files and generate data used to answer the research questions in the study.
+
+## Usage
+
+Refer to the `README.md` files inside each subfolder for setup instructions, usage examples, and experiment details.
+
+---
