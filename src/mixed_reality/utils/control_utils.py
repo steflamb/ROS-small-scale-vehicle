@@ -59,7 +59,7 @@ class Waypoint_control_utils():
         def calculate_distance(self, x_target, y_target, simulator_pose):
             x_cur, _, y_cur = simulator_pose
             distance = math.sqrt((x_target - x_cur)**2 + (y_target - y_cur)**2)
-            print(f"distance between {[round(x_cur,3),round(y_cur,3)]} and {[round(x_target,3),round(y_target,3)]} is {round(distance,3)}")
+            # print(f"distance between {[round(x_cur,3),round(y_cur,3)]} and {[round(x_target,3),round(y_target,3)]} is {round(distance,3)}")
             return distance
         
         def calculate_angle(self, x_target, y_target, simulator_pose, simulator_orientation):

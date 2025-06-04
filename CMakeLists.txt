@@ -52,6 +52,7 @@ add_message_files(
   Floats.msg
   Integers.msg
   Obstacles.msg
+  BoundingBox.msg
 )
 
 ## Generate services in the 'srv' folder

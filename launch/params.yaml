@@ -1,4 +1,6 @@
-map_name: "road_totest3.json"
+map_name: "maps/Nominal_map.json"
+# map_name: "maps/Generalization_map.json"
+
 
 video_source : 'http://team10.local:8890/video'
 driving_websocket : "ws://team10.local:8887/wsDrive"
@@ -16,13 +18,13 @@ simulator_ip : "127.0.0.1"
 simulator_port : 9091
 
 default_throttle_multiplier : 0.365
-#this has also been 0.34 and 0.365
 
-model_path : "models/sim_model_rand_augmented2.h5"
+model_path : "models/ft_model.h5"
+
 fixed_throttle : True
 
 initial_lane : "left"
-obstacle_distance_threshold : 10
+obstacle_distance_threshold : 9
 
 default_target_speed : 0.4
 
