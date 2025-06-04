@@ -44,3 +44,4 @@ src/mixed_reality/utils/__pycache__/for_conversions.cpython-38.pyc
 src/mixed_reality/utils/__pycache__/vicon.cpython-38.pyc
 srv/GetEnvironment.srv
 dummy_lidar_photo.jpg
+.DS_Store
